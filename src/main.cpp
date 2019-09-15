@@ -1,6 +1,7 @@
 
 // C/C++ Libraries
 #include <iostream>
+#include <string>
 
 // SFML Libraries
 #include <SFML/Window.hpp>
@@ -8,24 +9,30 @@
 // OpenGL Libraries
 #include <glad/glad.h> 
 
+// Project files
+#include "shaders.hpp"
+
 int main()
 {
     // Set some OpenGL context settings
     sf::ContextSettings settings;
     settings.depthBits = 24;
     settings.stencilBits = 8;
-    settings.antialiasingLevel = 2; // Optional
+    settings.antialiasingLevel = 2;
 
-    // Request OpenGL version 3.3
+    // Target OpenGL version 3.3 Core
     settings.majorVersion = 3;
     settings.minorVersion = 3;
     settings.attributeFlags = sf::ContextSettings::Core;
 
-    // Create OpenGL context
+    // Create OpenGL context with SFML
     sf::Window window(sf::VideoMode(800, 800), "OpenGL", sf::Style::Default, settings);
 
     // GLAD will find the proper opengl functions at runtime for cross platform compatability
     gladLoadGL();
+
+    // Load shaders
+
 
     // Event loop where all the magic happens
     while(window.isOpen()) {
