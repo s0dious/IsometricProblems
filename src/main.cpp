@@ -8,7 +8,10 @@
 #include <SFML/Window.hpp>
 
 // OpenGL Libraries
-#include <glad/glad.h> 
+#include <glad/glad.h>
+#include <glm/glm.hpp> 
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 // Project files
 #include "shaders.hpp"
@@ -31,6 +34,9 @@ std::string load_file(std::string filename)
 
     return file_string;
 }
+
+
+
 
 int main()
 {
@@ -131,11 +137,35 @@ int main()
     glEnableVertexAttribArray(0);
 
 
-    // Event loop where all the magic happens
-    while(window.isOpen()) {
-        sf::Event event;
+    // Initialize game state
+    sf::Clock game_clock;
+    sf::Clock game_state_printout_timer;
+    glm::vec3 game_position(0.0f, 0.0f, 0.0f);
 
-        while(window.pollEvent(event)) {
+    // Event loop where all the magic happens
+    while(window.isOpen()) 
+    {
+        // Update game state
+        sf::Event event;
+        glm::vec3 position_delta(0.0f, 0.0f, 0.0f);
+        sf::Time time_elapsed = game_clock.getElapsedTime();
+
+        sf::Time time_delta = game_state_printout_timer.getElapsedTime();
+
+        // std::cout << time_delta.asSeconds() << std::endl;
+
+        // Display game state
+        if(time_delta.asSeconds() > 1.0f)
+        {
+            std::cout << time_elapsed.asSeconds() << std::endl;
+            std::cout << "<" << game_position.x << ", " << game_position.y << ", " << game_position.z << ">" << std::endl;
+            
+            std::cout << std::endl;
+            game_state_printout_timer.restart();
+        }
+
+        while(window.pollEvent(event)) 
+        {
 
             // Process events
             if(event.type == sf::Event::Closed) {
@@ -144,18 +174,61 @@ int main()
             else if(event.type == sf::Event::KeyPressed) {
                 std::cout << "Key pressed" << std::endl;
 
-                if(event.key.code == sf::Keyboard::Escape) {
-                    window.close();
+                switch(event.key.code)
+                {
+                    case sf::Keyboard::Escape :
+                        window.close();
+                        break;
+                    case sf::Keyboard::Up :
+                        position_delta += glm::vec3(0.0f, 0.1f, 0.0f);
+                        break;
+                    case sf::Keyboard::Right :
+                        position_delta += glm::vec3(0.1f, 0.0f, 0.0f);
+                        break;
+                    case sf::Keyboard::Down :
+                        position_delta += glm::vec3(0.0f, -0.1f, 0.0f);
+                        break;
+                    case sf::Keyboard::Left :
+                        position_delta += glm::vec3(-0.1f, 0.0f, 0.0f);
+                        break;
+                    default:
+                        break;
                 }
+
+                // std::cout << "<" << position_delta.x << ", " << position_delta.y << ", " << position_delta.z << ">" << std::endl;
             }
+
+            game_position += position_delta;
         }
+        
 
         // Clear screen
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
+        // Create transformations
+        glm::mat4 transform = glm::mat4(1.0f);
+
+        // transform = glm::translate(transform, game_position);
+        transform = glm::translate(transform, game_position);
+        // transform = glm::rotate(transform, (float)time_elapsed.asSeconds(), glm::vec3(0.0f, 0.0f, 1.0f));
+
         // Draw objects
         glUseProgram(shader_program);
+
+        unsigned int transformLoc = glGetUniformLocation(shader_program, "transform");
+        glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
+
+        for(uint8_t i = 0; i < 4; i++)
+        {
+            for(uint8_t j = 0; j < 4; j++)
+            {
+                std::cout << transform[i][j] << " ";
+            }
+            std::cout << std::endl;
+        }
+        std::cout << std::endl;
+
         glBindVertexArray(vertex_array_object);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
