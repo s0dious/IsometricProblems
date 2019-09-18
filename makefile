@@ -14,11 +14,14 @@ src			= ./src
 # Building
 all: game
 
-game: src/main.cpp glad shaders/*
-	g++ src/main.cpp build/glad.o -o ${executable} ${flags} ${include}
+game: src/main.cpp glad camera shaders/*
+	g++ src/main.cpp build/*.o -o ${executable} ${flags} ${include}
 
 glad: src/glad.c
 	g++ -c src/glad.c -o build/glad.o ${flags} ${include}
+
+camera: src/iso_camera.cpp
+	g++ -c src/iso_camera.cpp -o build/camera.o ${flags} ${include}
 
 clean:
 	rm -f build/* game

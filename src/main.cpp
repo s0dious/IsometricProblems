@@ -3,6 +3,7 @@
 #include <iostream>
 #include <string>
 #include <fstream>
+#include <vector>
 
 // SFML Libraries
 #include <SFML/Window.hpp>
@@ -14,7 +15,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 // Project files
-#include "shaders.hpp"
+#include "iso_camera.hpp"
 
 std::string load_file(std::string filename)
 {
@@ -36,8 +37,6 @@ std::string load_file(std::string filename)
 }
 
 
-
-
 int main()
 {
     // Set some OpenGL context settings
@@ -52,7 +51,7 @@ int main()
     settings.attributeFlags = sf::ContextSettings::Core;
 
     // Create OpenGL context with SFML
-    sf::Window window(sf::VideoMode(800, 800), "OpenGL", sf::Style::Default, settings);
+    sf::Window window(sf::VideoMode(1280, 720), "OpenGL", sf::Style::Default, settings);
 
     // GLAD will find the proper opengl functions at runtime for cross platform compatability
     gladLoadGL();
@@ -105,24 +104,68 @@ int main()
     }
 
     // Define vertex and index data
-    GLfloat vertices[] = {
-        0.5f, 0.5f, 0.0f,   // top right
-        0.5f, -0.5f, 0.0f,  // bottom right
-        -0.5f, -0.5f, 0.0f, // bottom left
-        -0.5f, 0.5f, 0.0f   // top left
+
+    // A cube
+    float vertices[] = {
+        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+         0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+
+        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+        -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
     };
 
-    GLuint indices[] = {
-        0, 1, 3,
-        1, 2, 3
-    };
+    std::vector<glm::vec3> game_map; 
+
+    for(GLint i = -50; i <= 50; i++)
+    {
+        for(GLint j = -50; j <= 50; j++)
+        {
+            game_map.push_back(glm::vec3((float)i, 0.0f, (float)j));
+        }
+    }
 
     // Create vertex array and buffer objects
-    GLuint vertex_array_object, vertex_buffer_object, element_buffer_object;
+    GLuint vertex_array_object, vertex_buffer_object; //, element_buffer_object;
 
     glGenVertexArrays(1, &vertex_array_object);
     glGenBuffers(1, &vertex_buffer_object);
-    glGenBuffers(1, &element_buffer_object);
+    // glGenBuffers(1, &element_buffer_object);
 
     // Bind vertex array, buffers, and set attributes
     glBindVertexArray(vertex_array_object);
@@ -130,39 +173,62 @@ int main()
     glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_object);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, element_buffer_object);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+    // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, element_buffer_object);
+    // glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3*sizeof(GLfloat), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5*sizeof(GLfloat), (void*)0);
     glEnableVertexAttribArray(0);
 
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5*sizeof(float), ((void*)(3*sizeof(float))));
+    glEnableVertexAttribArray(1);
+
+    // Initialize window state
+    float screen_width = 1280.0f;
+    float screen_height = 720.0f;
+
+    glEnable(GL_DEPTH_TEST);
 
     // Initialize game state
     sf::Clock game_clock;
-    sf::Clock game_state_printout_timer;
-    glm::vec3 game_position(0.0f, 0.0f, 0.0f);
+    float previous_time = 0;
+
+    GLuint frames_per_print = 200;
+    GLuint frames_print_count = frames_per_print;
+
+    iso::Camera camera(glm::vec3(0.0f, 2.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    camera.set_origin(screen_width/2, screen_height/2);
+
+    camera.set_mouse((float)sf::Mouse::getPosition(window).x, (float)sf::Mouse::getPosition(window).y);
 
     // Event loop where all the magic happens
     while(window.isOpen()) 
     {
+        // std::cout << frames_print_count << std::endl;
         // Update game state
         sf::Event event;
-        glm::vec3 position_delta(0.0f, 0.0f, 0.0f);
-        sf::Time time_elapsed = game_clock.getElapsedTime();
+        glm::vec3 camera_position_delta(0.0f, 0.0f, 0.0f);
+        camera.set_mouse((float)sf::Mouse::getPosition(window).x, (float)sf::Mouse::getPosition(window).y);
 
-        sf::Time time_delta = game_state_printout_timer.getElapsedTime();
+        std::cout << (float)sf::Mouse::getPosition(window).x << " " << (float)sf::Mouse::getPosition(window).y << std::endl;
+
+        sf::Time current_time = game_clock.getElapsedTime();
+        float time_delta = current_time.asSeconds() - previous_time;
+        previous_time = current_time.asSeconds();
 
         // std::cout << time_delta.asSeconds() << std::endl;
 
+
         // Display game state
-        if(time_delta.asSeconds() > 1.0f)
+        float fps = 1.0f / time_delta;
+
+        if(--frames_print_count == 0)
         {
-            std::cout << time_elapsed.asSeconds() << std::endl;
-            std::cout << "<" << game_position.x << ", " << game_position.y << ", " << game_position.z << ">" << std::endl;
+            std::cout << "FPS: " << fps << std::endl;
+            std::cout << "(" << camera.get_position().x << ", " << camera.get_position().y << ", " << camera.get_position().z << ")" << std::endl;
             
-            std::cout << std::endl;
-            game_state_printout_timer.restart();
+            frames_print_count = frames_per_print;
         }
+        
 
         while(window.pollEvent(event)) 
         {
@@ -172,69 +238,76 @@ int main()
                 window.close();
             }
             else if(event.type == sf::Event::KeyPressed) {
-                std::cout << "Key pressed" << std::endl;
-
                 switch(event.key.code)
                 {
                     case sf::Keyboard::Escape :
                         window.close();
                         break;
-                    case sf::Keyboard::Up :
-                        position_delta += glm::vec3(0.0f, 0.1f, 0.0f);
-                        break;
-                    case sf::Keyboard::Right :
-                        position_delta += glm::vec3(0.1f, 0.0f, 0.0f);
-                        break;
-                    case sf::Keyboard::Down :
-                        position_delta += glm::vec3(0.0f, -0.1f, 0.0f);
-                        break;
-                    case sf::Keyboard::Left :
-                        position_delta += glm::vec3(-0.1f, 0.0f, 0.0f);
-                        break;
-                    default:
-                        break;
                 }
-
-                // std::cout << "<" << position_delta.x << ", " << position_delta.y << ", " << position_delta.z << ">" << std::endl;
             }
 
-            game_position += position_delta;
+            
         }
-        
+
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+        {
+            camera.forward(time_delta);
+        }
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+        {
+            camera.right(time_delta);
+        }
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+        {
+            camera.left(time_delta);
+        }
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
+        {
+            camera.backward(time_delta);
+        }
+
 
         // Clear screen
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // Create transformations
-        glm::mat4 transform = glm::mat4(1.0f);
-
-        // transform = glm::translate(transform, game_position);
-        transform = glm::translate(transform, game_position);
-        // transform = glm::rotate(transform, (float)time_elapsed.asSeconds(), glm::vec3(0.0f, 0.0f, 1.0f));
-
-        // Draw objects
+        // Activate our shader program
         glUseProgram(shader_program);
+        
+        // Perspective math
+        glm::mat4 view = glm::mat4(1.0f);
+        glm::mat4 projection = glm::mat4(1.0f);
+        projection = glm::perspective(glm::radians(45.0f), screen_width/screen_height, 0.1f, 100.0f);
+        view = camera.get_view();
 
-        unsigned int transformLoc = glGetUniformLocation(shader_program, "transform");
-        glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
-
-        for(uint8_t i = 0; i < 4; i++)
-        {
-            for(uint8_t j = 0; j < 4; j++)
-            {
-                std::cout << transform[i][j] << " ";
-            }
-            std::cout << std::endl;
-        }
-        std::cout << std::endl;
+        GLuint projection_uniform = glGetUniformLocation(shader_program, "projection");
+        glUniformMatrix4fv(projection_uniform, 1, GL_FALSE, glm::value_ptr(projection));
+        
+        GLuint view_uniform = glGetUniformLocation(shader_program, "view");
+        glUniformMatrix4fv(view_uniform, 1, GL_FALSE, glm::value_ptr(view));
 
         glBindVertexArray(vertex_array_object);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        for(std::vector<glm::vec3>::size_type i = 0; i < game_map.size(); i++)
+        {
+            // calculate the model matrix for each object and pass it to shader before drawing
+            glm::mat4 model = glm::mat4(1.0f);
+            model = glm::translate(model, game_map[i]);
 
-        // Push buffer to screen
+            GLuint model_uniform = glGetUniformLocation(shader_program, "model");
+            glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
+
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+        }
+
+        // sf::Mouse::setPosition(sf::Vector2i(floorf(screen_width/2.0f), floorf(screen_height/2.0f)), window);
+        std::cout << "x y position:" << (float)sf::Mouse::getPosition(window).x << " " << (float)sf::Mouse::getPosition(window).y << std::endl;
+
         window.display();
+        std::cout << std::endl;
     }
+
+    glDeleteVertexArrays(1, &vertex_array_object);
+    glDeleteBuffers(1, &vertex_buffer_object);
 
     return 0;
 }
