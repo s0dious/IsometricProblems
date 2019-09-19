@@ -16,6 +16,9 @@
 
 // Project files
 #include "iso_camera.hpp"
+#include "iso_shader.hpp"
+
+#include "octree/octree.h"
 
 std::string load_file(std::string filename)
 {
@@ -57,106 +60,71 @@ int main()
     gladLoadGL();
 
     // Load shaders
-    std::string vertex_shader_string = load_file(std::string("shaders/vertex.glsl"));
-    std::string fragment_shader_string = load_file(std::string("shaders/fragment.glsl"));
+    iso::VertexShader vertex_shader("shaders/voxel_vertex.glsl");
+    vertex_shader.get_error();
 
-    const GLchar* vertex_shader_source = vertex_shader_string.c_str();
-    const GLchar* fragment_shader_source = fragment_shader_string.c_str();
+    iso::FragmentShader fragment_shader("shaders/voxel_fragment.glsl");
+    fragment_shader.get_error();
 
-    GLint success;
-    GLchar info_log[512];
-
-    // Load vertex shader and make sure it compiles
-    GLuint vertex_shader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertex_shader, 1, &vertex_shader_source, NULL);
-    glCompileShader(vertex_shader);
-
-    glGetShaderiv(vertex_shader, GL_COMPILE_STATUS, &success);
-    if(!success)
-    {
-        glGetShaderInfoLog(vertex_shader, 512, NULL, info_log);
-        std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << info_log << std::endl;
-    }
-
-    // Load fragment shader and make sure it compiles
-    GLuint fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragment_shader, 1, &fragment_shader_source, NULL);
-    glCompileShader(fragment_shader);
-
-    glGetShaderiv(fragment_shader, GL_COMPILE_STATUS, &success);
-    if(!success)
-    {
-        glGetShaderInfoLog(fragment_shader, 512, NULL, info_log);
-        std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << info_log << std::endl;
-    }
-
-    // Make a shader program, link shaders, and check for linking errors
-    GLuint shader_program = glCreateProgram();
-    glAttachShader(shader_program, vertex_shader);
-    glAttachShader(shader_program, fragment_shader);
-    glLinkProgram(shader_program);
-
-    glGetProgramiv(shader_program, GL_LINK_STATUS, &success);
-    if(!success)
-    {
-        glGetProgramInfoLog(shader_program, 512, NULL, info_log);
-        std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << info_log << std::endl;
-    }
+    iso::ShaderProgram voxel_shader;
+    voxel_shader.attach_shader(vertex_shader);
+    voxel_shader.attach_shader(fragment_shader);
+    voxel_shader.link();
 
     // Define vertex and index data
 
     // A cube
     float vertices[] = {
-        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-         0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
-         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+         0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+         0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+         0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+        -0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
 
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-        -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+         0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+         0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+         0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
 
-        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-        -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+        -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+        -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+        -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+        -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+        -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+        -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
 
-         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-         0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-         0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-         0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+         0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+         0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+         0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+         0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+         0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
 
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-         0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
-         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+         0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+         0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+         0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
 
-        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-        -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
-        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
+        -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+         0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+         0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+         0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+        -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
     };
 
-    std::vector<glm::vec3> game_map; 
+    Octree<glm::vec3> game_map(128);
 
-    for(GLint i = -50; i <= 50; i++)
+    for(GLint i = 0; i < 128; i++)
     {
-        for(GLint j = -50; j <= 50; j++)
+        for(GLint j = 0; j < 128; j++)
         {
-            game_map.push_back(glm::vec3((float)i, 0.0f, (float)j));
+            game_map(i, j, 0) = glm::vec3((float)i, -2.0f, (float)j);
         }
     }
 
@@ -176,10 +144,10 @@ int main()
     // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, element_buffer_object);
     // glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5*sizeof(GLfloat), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6*sizeof(GLfloat), (void*)0);
     glEnableVertexAttribArray(0);
 
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5*sizeof(float), ((void*)(3*sizeof(float))));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), ((void*)(3*sizeof(float))));
     glEnableVertexAttribArray(1);
 
     // Initialize window state
@@ -190,7 +158,11 @@ int main()
 
     // Initialize game state
     sf::Clock game_clock;
+
+    float current_time = 0;
     float previous_time = 0;
+
+    glm::vec3 light_position(0.0, 5.0f, 0.0f);
 
     GLuint frames_per_print = 200;
     GLuint frames_print_count = frames_per_print;
@@ -211,9 +183,9 @@ int main()
 
         std::cout << (float)sf::Mouse::getPosition(window).x << " " << (float)sf::Mouse::getPosition(window).y << std::endl;
 
-        sf::Time current_time = game_clock.getElapsedTime();
-        float time_delta = current_time.asSeconds() - previous_time;
-        previous_time = current_time.asSeconds();
+        current_time = game_clock.getElapsedTime().asSeconds();
+        float time_delta = current_time - previous_time;
+        previous_time = current_time;
 
         // std::cout << time_delta.asSeconds() << std::endl;
 
@@ -272,7 +244,18 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // Activate our shader program
-        glUseProgram(shader_program);
+        voxel_shader.use();
+        voxel_shader.set_uniform("light.position", glm::vec3(light_position.x + 5*sin(current_time) , light_position.y, light_position.z + 5*cos(current_time)));
+        voxel_shader.set_uniform("viewPos", camera.get_position());
+
+        voxel_shader.set_uniform("light.ambient", glm::vec3(1.0f, 1.0f, 1.0f));
+        voxel_shader.set_uniform("light.diffuse", glm::vec3(1.0f, 1.0f, 1.0f));
+        voxel_shader.set_uniform("light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
+
+        voxel_shader.set_uniform("material.ambient", glm::vec3(1.0f, 0.0f, 0.3f));
+        voxel_shader.set_uniform("material.diffuse", glm::vec3(1.0f, 0.2f, 0.3f));
+        voxel_shader.set_uniform("material.specular", glm::vec3(0.5f, 0.5f, 0.2f));
+        voxel_shader.set_uniform("material.shininess", 32.0f);
         
         // Perspective math
         glm::mat4 view = glm::mat4(1.0f);
@@ -280,26 +263,34 @@ int main()
         projection = glm::perspective(glm::radians(45.0f), screen_width/screen_height, 0.1f, 100.0f);
         view = camera.get_view();
 
-        GLuint projection_uniform = glGetUniformLocation(shader_program, "projection");
-        glUniformMatrix4fv(projection_uniform, 1, GL_FALSE, glm::value_ptr(projection));
-        
-        GLuint view_uniform = glGetUniformLocation(shader_program, "view");
-        glUniformMatrix4fv(view_uniform, 1, GL_FALSE, glm::value_ptr(view));
+        voxel_shader.set_uniform("projection", projection);
+        voxel_shader.set_uniform("view", view);
 
         glBindVertexArray(vertex_array_object);
-        for(std::vector<glm::vec3>::size_type i = 0; i < game_map.size(); i++)
-        {
-            // calculate the model matrix for each object and pass it to shader before drawing
-            glm::mat4 model = glm::mat4(1.0f);
-            model = glm::translate(model, game_map[i]);
+        
+        Array2D<glm::vec3> map_slice;
+        for(size_t z = 0; z < 128; z++) {
+            map_slice = game_map.zSlice(z);
 
-            GLuint model_uniform = glGetUniformLocation(shader_program, "model");
-            glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
+            for(size_t y = 0; y < 128; y++) {
 
-            glDrawArrays(GL_TRIANGLES, 0, 36);
+                for(size_t x = 0; x < 128; x++) {
+
+                    if(map_slice(x, y) != game_map.emptyValue())
+                    {
+                        std::cout << "Voxel at " << x << " " << y << " " << z << std::endl;
+
+                        glm::vec3 voxel_color = map_slice(x, y);
+
+                        glm::mat4 model = glm::mat4(1.0f);
+                        model = glm::translate(model, glm::vec3((float)x, 0.0f, (float)y));
+                        voxel_shader.set_uniform("model", model);
+                        glDrawArrays(GL_TRIANGLES, 0, 36);
+                    }
+                }
+            }
         }
 
-        // sf::Mouse::setPosition(sf::Vector2i(floorf(screen_width/2.0f), floorf(screen_height/2.0f)), window);
         std::cout << "x y position:" << (float)sf::Mouse::getPosition(window).x << " " << (float)sf::Mouse::getPosition(window).y << std::endl;
 
         window.display();

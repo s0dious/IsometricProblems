@@ -14,7 +14,7 @@ src			= ./src
 # Building
 all: game
 
-game: src/main.cpp glad camera shaders/*
+game: src/main.cpp glad camera shader shaders/*
 	g++ src/main.cpp build/*.o -o ${executable} ${flags} ${include}
 
 glad: src/glad.c
@@ -22,6 +22,9 @@ glad: src/glad.c
 
 camera: src/iso_camera.cpp
 	g++ -c src/iso_camera.cpp -o build/camera.o ${flags} ${include}
+
+shader: src/iso_shader.cpp
+	g++ -c src/iso_shader.cpp -o build/shader.o ${flags} ${include}
 
 clean:
 	rm -f build/* game
