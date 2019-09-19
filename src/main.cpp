@@ -17,6 +17,7 @@
 // Project files
 #include "iso_camera.hpp"
 #include "iso_shader.hpp"
+#include "iso_map.hpp"
 
 #include "octree/octree.h"
 
@@ -118,13 +119,14 @@ int main()
         -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
     };
 
-    Octree<glm::vec3> game_map(128);
+    // Octree<glm::vec3> game_map(128);
+    iso::Map<glm::vec3> game_map(128);
 
     for(GLint i = 0; i < 128; i++)
     {
         for(GLint j = 0; j < 128; j++)
         {
-            game_map(i, j, 0) = glm::vec3((float)i, -2.0f, (float)j);
+            game_map.data(i, j, 0) = glm::vec3((float)i, -2.0f, (float)j);
         }
     }
 
@@ -181,7 +183,7 @@ int main()
         glm::vec3 camera_position_delta(0.0f, 0.0f, 0.0f);
         camera.set_mouse((float)sf::Mouse::getPosition(window).x, (float)sf::Mouse::getPosition(window).y);
 
-        std::cout << (float)sf::Mouse::getPosition(window).x << " " << (float)sf::Mouse::getPosition(window).y << std::endl;
+        // std::cout << (float)sf::Mouse::getPosition(window).x << " " << (float)sf::Mouse::getPosition(window).y << std::endl;
 
         current_time = game_clock.getElapsedTime().asSeconds();
         float time_delta = current_time - previous_time;
@@ -267,34 +269,46 @@ int main()
         voxel_shader.set_uniform("view", view);
 
         glBindVertexArray(vertex_array_object);
+
+        game_map.for_each(
+            [&voxel_shader] (glm::vec3 position, glm::vec3 voxel_color) {
+
+                // std::cout << "Running lambda at " << position.x << " " << position.z << std::endl;
+
+                glm::mat4 model = glm::mat4(1.0f);
+                model = glm::translate(model, glm::vec3((float)position.x, 0.0f, (float)position.y));
+                voxel_shader.set_uniform("model", model);
+                glDrawArrays(GL_TRIANGLES, 0, 36);
+            }   
+        );
         
-        Array2D<glm::vec3> map_slice;
-        for(size_t z = 0; z < 128; z++) {
-            map_slice = game_map.zSlice(z);
+        // Array2D<glm::vec3> map_slice;
+        // for(size_t z = 0; z < 128; z++) {
+        //     map_slice = game_map.zSlice(z);
 
-            for(size_t y = 0; y < 128; y++) {
+        //     for(size_t y = 0; y < 128; y++) {
 
-                for(size_t x = 0; x < 128; x++) {
+        //         for(size_t x = 0; x < 128; x++) {
 
-                    if(map_slice(x, y) != game_map.emptyValue())
-                    {
-                        std::cout << "Voxel at " << x << " " << y << " " << z << std::endl;
+        //             if(map_slice(x, y) != game_map.emptyValue())
+        //             {
+        //                 std::cout << "Voxel at " << x << " " << y << " " << z << std::endl;
 
-                        glm::vec3 voxel_color = map_slice(x, y);
+        //                 glm::vec3 voxel_color = map_slice(x, y);
 
-                        glm::mat4 model = glm::mat4(1.0f);
-                        model = glm::translate(model, glm::vec3((float)x, 0.0f, (float)y));
-                        voxel_shader.set_uniform("model", model);
-                        glDrawArrays(GL_TRIANGLES, 0, 36);
-                    }
-                }
-            }
-        }
+        //                 glm::mat4 model = glm::mat4(1.0f);
+        //                 model = glm::translate(model, glm::vec3((float)x, 0.0f, (float)y));
+        //                 voxel_shader.set_uniform("model", model);
+        //                 glDrawArrays(GL_TRIANGLES, 0, 36);
+        //             }
+        //         }
+        //     }
+        // }
 
-        std::cout << "x y position:" << (float)sf::Mouse::getPosition(window).x << " " << (float)sf::Mouse::getPosition(window).y << std::endl;
+        // std::cout << "x y position:" << (float)sf::Mouse::getPosition(window).x << " " << (float)sf::Mouse::getPosition(window).y << std::endl;
 
         window.display();
-        std::cout << std::endl;
+        // std::cout << std::endl;
     }
 
     glDeleteVertexArrays(1, &vertex_array_object);

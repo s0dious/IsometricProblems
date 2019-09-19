@@ -5,6 +5,8 @@
 #include <fstream>
 #include <iostream>
 #include <vector>
+#include <map>
+#include <functional>
 
 #include <glad/glad.h> 
 #include <glm/mat4x4.hpp>
@@ -55,6 +57,13 @@ namespace iso
         GLuint m_shader_program_id;
 
         std::vector<Shader> m_shaders;
+    };
+
+    class UniformMap
+    {
+    public:
+
+    private:
     };
 }
 
