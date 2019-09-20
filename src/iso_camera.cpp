@@ -31,18 +31,34 @@ void iso::Camera::set_mouse(float p_mouse_x, float p_mouse_y)
 {
     // std::cout << "mouse change: " << m_origin_mouse_x - p_mouse_x << " " << m_origin_mouse_y - p_mouse_y << std::endl;
 
-    float x_delta = m_sensitivity * -1 * (m_origin_mouse_x - p_mouse_x);
-    float y_delta = m_sensitivity * -1 * (m_origin_mouse_y - p_mouse_y);
+    float x_delta = 0.0f;
+    float y_delta = 0.0f;
 
-    // if(p_mouse_x < 0)
-    // {
-    //     float x_delta = m_sensitivity * -1 * 
-    // }
+    // float x_delta = m_sensitivity * -1 * (m_origin_mouse_x - p_mouse_x);
+    // float y_delta = m_sensitivity * -1 * (m_origin_mouse_y - p_mouse_y);
+
+    int multiplier = 5;
+    if(m_origin_mouse_x - p_mouse_x > 0)
+    {
+        x_delta = -1 * multiplier * m_sensitivity;
+    }
+    if(m_origin_mouse_x - p_mouse_x < 0)
+    {
+        x_delta = multiplier * m_sensitivity;
+    }
+    if(m_origin_mouse_y - p_mouse_y > 0)
+    {
+        y_delta = -1 * multiplier * m_sensitivity;
+    }
+    if(m_origin_mouse_y - p_mouse_y < 0)
+    {
+        y_delta = multiplier * m_sensitivity;
+    }
 
     // std::cout << "x y delta: "  << "<" << x_delta << ", " << y_delta << ">" << std::endl;
 
-    m_yaw = x_delta;
-    m_pitch = y_delta;
+    m_yaw += x_delta;
+    m_pitch += y_delta;
 
     // std::cout << "yaw pitch: " << m_yaw << " " << m_pitch << std::endl;
 

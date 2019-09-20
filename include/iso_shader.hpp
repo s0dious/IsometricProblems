@@ -58,13 +58,6 @@ namespace iso
 
         std::vector<Shader> m_shaders;
     };
-
-    class UniformMap
-    {
-    public:
-
-    private:
-    };
 }
 
 #endif

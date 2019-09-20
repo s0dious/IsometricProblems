@@ -18,28 +18,9 @@
 #include "iso_camera.hpp"
 #include "iso_shader.hpp"
 #include "iso_map.hpp"
+#include "iso_model.hpp"
 
 #include "octree/octree.h"
-
-std::string load_file(std::string filename)
-{
-    std::string file_string;
-
-    std::ifstream file(filename);
-    if(file.is_open())
-    {
-        std::string temp;
-        while(std::getline(file, temp))
-        {
-            file_string += temp + "\n";
-        }
-
-        // file_string += "\0";
-    }
-
-    return file_string;
-}
-
 
 int main()
 {
@@ -56,6 +37,7 @@ int main()
 
     // Create OpenGL context with SFML
     sf::Window window(sf::VideoMode(1280, 720), "OpenGL", sf::Style::Default, settings);
+    window.setMouseCursorVisible(false);
 
     // GLAD will find the proper opengl functions at runtime for cross platform compatability
     gladLoadGL();
@@ -164,7 +146,7 @@ int main()
     float current_time = 0;
     float previous_time = 0;
 
-    glm::vec3 light_position(0.0, 5.0f, 0.0f);
+    glm::vec3 light_position(64.0, 5.0f, 64.0f);
 
     GLuint frames_per_print = 200;
     GLuint frames_print_count = frames_per_print;
@@ -182,6 +164,8 @@ int main()
         sf::Event event;
         glm::vec3 camera_position_delta(0.0f, 0.0f, 0.0f);
         camera.set_mouse((float)sf::Mouse::getPosition(window).x, (float)sf::Mouse::getPosition(window).y);
+
+        sf::Mouse::setPosition(sf::Vector2i(640, 360), window);
 
         // std::cout << (float)sf::Mouse::getPosition(window).x << " " << (float)sf::Mouse::getPosition(window).y << std::endl;
 
@@ -219,7 +203,6 @@ int main()
                         break;
                 }
             }
-
             
         }
 
@@ -247,17 +230,14 @@ int main()
 
         // Activate our shader program
         voxel_shader.use();
-        voxel_shader.set_uniform("light.position", glm::vec3(light_position.x + 5*sin(current_time) , light_position.y, light_position.z + 5*cos(current_time)));
         voxel_shader.set_uniform("viewPos", camera.get_position());
+        
+        glm::vec3 current_light_position(light_position.x + 5*sin(current_time) , light_position.y, light_position.z + 5*cos(current_time));
+        iso::Material material(glm::vec3(1.0f, 0.0f, 0.2f), glm::vec3(1.0f, 0.2f, 0.3f), glm::vec3(0.5f, 0.5f, 0.2f), 32.0f);
+        iso::Light light(current_light_position, glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f));
 
-        voxel_shader.set_uniform("light.ambient", glm::vec3(1.0f, 1.0f, 1.0f));
-        voxel_shader.set_uniform("light.diffuse", glm::vec3(1.0f, 1.0f, 1.0f));
-        voxel_shader.set_uniform("light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
-
-        voxel_shader.set_uniform("material.ambient", glm::vec3(1.0f, 0.0f, 0.3f));
-        voxel_shader.set_uniform("material.diffuse", glm::vec3(1.0f, 0.2f, 0.3f));
-        voxel_shader.set_uniform("material.specular", glm::vec3(0.5f, 0.5f, 0.2f));
-        voxel_shader.set_uniform("material.shininess", 32.0f);
+        material.apply(voxel_shader);
+        light.apply(voxel_shader);
         
         // Perspective math
         glm::mat4 view = glm::mat4(1.0f);
@@ -273,42 +253,14 @@ int main()
         game_map.for_each(
             [&voxel_shader] (glm::vec3 position, glm::vec3 voxel_color) {
 
-                // std::cout << "Running lambda at " << position.x << " " << position.z << std::endl;
-
                 glm::mat4 model = glm::mat4(1.0f);
                 model = glm::translate(model, glm::vec3((float)position.x, 0.0f, (float)position.y));
                 voxel_shader.set_uniform("model", model);
                 glDrawArrays(GL_TRIANGLES, 0, 36);
             }   
         );
-        
-        // Array2D<glm::vec3> map_slice;
-        // for(size_t z = 0; z < 128; z++) {
-        //     map_slice = game_map.zSlice(z);
-
-        //     for(size_t y = 0; y < 128; y++) {
-
-        //         for(size_t x = 0; x < 128; x++) {
-
-        //             if(map_slice(x, y) != game_map.emptyValue())
-        //             {
-        //                 std::cout << "Voxel at " << x << " " << y << " " << z << std::endl;
-
-        //                 glm::vec3 voxel_color = map_slice(x, y);
-
-        //                 glm::mat4 model = glm::mat4(1.0f);
-        //                 model = glm::translate(model, glm::vec3((float)x, 0.0f, (float)y));
-        //                 voxel_shader.set_uniform("model", model);
-        //                 glDrawArrays(GL_TRIANGLES, 0, 36);
-        //             }
-        //         }
-        //     }
-        // }
-
-        // std::cout << "x y position:" << (float)sf::Mouse::getPosition(window).x << " " << (float)sf::Mouse::getPosition(window).y << std::endl;
 
         window.display();
-        // std::cout << std::endl;
     }
 
     glDeleteVertexArrays(1, &vertex_array_object);
