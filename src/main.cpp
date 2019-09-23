@@ -159,7 +159,6 @@ int main()
     // Event loop where all the magic happens
     while(window.isOpen()) 
     {
-        // std::cout << frames_print_count << std::endl;
         // Update game state
         sf::Event event;
         glm::vec3 camera_position_delta(0.0f, 0.0f, 0.0f);
@@ -236,8 +235,8 @@ int main()
         iso::Material material(glm::vec3(1.0f, 0.0f, 0.2f), glm::vec3(1.0f, 0.2f, 0.3f), glm::vec3(0.5f, 0.5f, 0.2f), 32.0f);
         iso::Light light(current_light_position, glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f));
 
-        material.apply(voxel_shader);
-        light.apply(voxel_shader);
+        voxel_shader.apply_material(material);
+        voxel_shader.apply_light(light);
         
         // Perspective math
         glm::mat4 view = glm::mat4(1.0f);
