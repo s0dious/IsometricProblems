@@ -2,6 +2,7 @@
 #define _ISO_INPUT_HPP
 
 #include <vector>
+#include <SFML/Window.hpp>
 
 #include "glm/vec2.hpp"
 
@@ -11,22 +12,33 @@ namespace iso
 
     enum class KeyboardInput
     {
-        LEFT,
-        RIGHT,
-        FORWARD,
-        BACKWARD,
-
+        Left,
+        Right,
+        Up,
+        Down,
+        Space,
+        Escape
     };
 
     class Input
     {
     public:
-        Input();
-        std::vector<KeyboardInput> poll_keyboard();
-        MouseInput poll_mouse();
+        virtual std::vector<KeyboardInput> poll_keyboard() = 0;
+        virtual MouseInput poll_mouse() = 0;
     };
 
-} // namespace iso
+
+    class LocalInput : public Input
+    {
+    public:
+        LocalInput(sf::Window& window);
+        std::vector<KeyboardInput> poll_keyboard();
+        MouseInput poll_mouse();
+
+    private:
+        sf::Window& m_window;
+    };
+}
 
 
 #endif

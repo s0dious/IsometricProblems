@@ -1,7 +1,8 @@
 #ifndef _ISO_MODEL_HPP
 #define _ISO_MODEL_HPP
 
-#include "iso_shader.hpp"
+#include "glad/glad.h"
+#include "glm/vec3.hpp"
 
 namespace iso
 {

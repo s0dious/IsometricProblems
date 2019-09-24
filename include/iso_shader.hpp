@@ -51,8 +51,8 @@ namespace iso
         void get_error(std::ostream& err = std::cerr);
         void use();
 
-        void apply_material(iso::Material material);
-        void apply_light(iso::Light light);
+        void apply(iso::Material material);
+        void apply(iso::Light light);
 
         void set_uniform(std::string p_uniform, glm::mat4 mat_four);
         void set_uniform(std::string p_uniform, glm::vec3 vec_three);

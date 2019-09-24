@@ -117,13 +117,16 @@ namespace iso
     /**
      * Test comment
      */
-    void ShaderProgram::apply_material(iso::Material material)
+    void ShaderProgram::apply(iso::Material material)
     {
-        material.app
+        set_uniform("material.ambient", material.get_ambient());
+        set_uniform("material.diffuse", material.get_diffuse());
+        set_uniform("material.specular", material.get_specular());
+        set_uniform("material.shininess", material.get_shininess());
     }
 
 
-    void ShaderProgram::apply_light(iso::Light light)
+    void ShaderProgram::apply(iso::Light light)
     {
         set_uniform("light.position", light.get_position());
         set_uniform("light.ambient", light.get_ambient());

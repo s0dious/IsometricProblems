@@ -16,9 +16,10 @@
 
 // Project files
 #include "iso_camera.hpp"
-#include "iso_shader.hpp"
+#include "iso_input.hpp"
 #include "iso_map.hpp"
 #include "iso_model.hpp"
+#include "iso_shader.hpp"
 
 #include "octree/octree.h"
 
@@ -154,13 +155,14 @@ int main()
     iso::Camera camera(glm::vec3(0.0f, 2.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
     camera.set_origin(screen_width/2, screen_height/2);
 
+    iso::LocalInput user_input(window);
+
     camera.set_mouse((float)sf::Mouse::getPosition(window).x, (float)sf::Mouse::getPosition(window).y);
 
     // Event loop where all the magic happens
     while(window.isOpen()) 
     {
         // Update game state
-        sf::Event event;
         glm::vec3 camera_position_delta(0.0f, 0.0f, 0.0f);
         camera.set_mouse((float)sf::Mouse::getPosition(window).x, (float)sf::Mouse::getPosition(window).y);
 
@@ -186,23 +188,25 @@ int main()
             frames_print_count = frames_per_print;
         }
         
-
-        while(window.pollEvent(event)) 
+        std::vector<iso::KeyboardInput> current_input = user_input.poll_keyboard();
+        for(std::vector<iso::KeyboardInput>::size_type i = 0; i < current_input.size(); i++)
         {
-
-            // Process events
-            if(event.type == sf::Event::Closed) {
-                window.close();
+            switch(current_input[i])
+            {
+                case iso::KeyboardInput::Up:
+                    break;
+                case iso::KeyboardInput::Right:
+                    break;
+                case iso::KeyboardInput::Down:
+                    break;
+                case iso::KeyboardInput::Left:
+                    break;
+                case iso::KeyboardInput::Space:
+                    break;
+                case iso::KeyboardInput::Escape:
+                    window.close();
+                    break;
             }
-            else if(event.type == sf::Event::KeyPressed) {
-                switch(event.key.code)
-                {
-                    case sf::Keyboard::Escape :
-                        window.close();
-                        break;
-                }
-            }
-            
         }
 
         if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
@@ -235,8 +239,8 @@ int main()
         iso::Material material(glm::vec3(1.0f, 0.0f, 0.2f), glm::vec3(1.0f, 0.2f, 0.3f), glm::vec3(0.5f, 0.5f, 0.2f), 32.0f);
         iso::Light light(current_light_position, glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f));
 
-        voxel_shader.apply_material(material);
-        voxel_shader.apply_light(light);
+        voxel_shader.apply(material);
+        voxel_shader.apply(light);
         
         // Perspective math
         glm::mat4 view = glm::mat4(1.0f);
