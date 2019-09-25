@@ -42,7 +42,7 @@ namespace iso
         private:
             sqlite3 *m_db;
             GLboolean m_connected;
-    }
+    };
 
     class Model
     {

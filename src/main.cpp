@@ -160,7 +160,8 @@ int main()
     camera.set_mouse((float)sf::Mouse::getPosition(window).x, (float)sf::Mouse::getPosition(window).y);
 
     // Event loop where all the magic happens
-    while(window.isOpen()) 
+    bool should_close = false;
+    while(!should_close) 
     {
         // Update game state
         glm::vec3 camera_position_delta(0.0f, 0.0f, 0.0f);
@@ -264,6 +265,8 @@ int main()
         );
 
         window.display();
+
+        // should_close = character.close_requested();
     }
 
     glDeleteVertexArrays(1, &vertex_array_object);

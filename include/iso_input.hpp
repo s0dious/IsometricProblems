@@ -31,7 +31,7 @@ namespace iso
     class LocalInput : public Input
     {
     public:
-        LocalInput(sf::Window& window);
+        LocalInput(sf::Window& p_window);
         std::vector<KeyboardInput> poll_keyboard();
         MouseInput poll_mouse();
 

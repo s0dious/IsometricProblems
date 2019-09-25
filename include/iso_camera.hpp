@@ -22,17 +22,22 @@ namespace iso
         void set_mouse(float p_mouse_x, float p_mouse_y);
         void set_position(glm::vec3 p_position);
 
+        glm::vec3 get_front();
+        glm::vec3 get_right();
+        glm::vec3 get_up();
+        glm::mat4 get_view();
+
         void forward(float p_time_delta, GLboolean p_lock_y = true);
         void backward(float p_time_delta, GLboolean p_lock_y = true);
         void right(float p_time_delta, GLboolean p_lock_y = true);
         void left(float p_time_delta, GLboolean p_lock_y = true);
 
+
+        // temp
         glm::vec3 get_position() 
         {
             return m_position;
         }
-
-        glm::mat4 get_view();
 
         void set_origin(float p_origin_mouse_x, float p_origin_mouse_y)
         {

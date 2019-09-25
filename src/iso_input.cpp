@@ -1,10 +1,13 @@
 #include "iso_input.hpp"
 
 #include <iostream>
+#include <SFML/Window.hpp>
 
 namespace iso
 {
-    LocalInput::LocalInput(sf::Window& window): m_window(window) {}
+    LocalInput::LocalInput(sf::Window& p_window):
+        m_window(p_window) 
+    { }
 
     std::vector<KeyboardInput> LocalInput::poll_keyboard()
     {
