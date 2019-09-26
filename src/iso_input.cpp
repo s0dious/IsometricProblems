@@ -1,10 +1,34 @@
 #include "iso_input.hpp"
 
-#include <iostream>
-#include <SFML/Window.hpp>
-
 namespace iso
 {
+    /**
+     * 
+     */
+    InputController::InputController(sf::Window& p_window):
+        m_window(p_window)
+    { 
+
+    }
+
+
+    /**
+     * 
+     */
+    void InputController::update(std::vector<iso::Character> p_character_list)
+    {
+        // Update each character
+        for(std::vector<iso::Character>::size_type i = 0; i < p_character_list.size(); i++)
+        {
+            iso::Character& current_character = p_character_list[i];
+
+            
+        }
+    }
+
+
+    // Legacy code
+
     LocalInput::LocalInput(sf::Window& p_window):
         m_window(p_window) 
     { }

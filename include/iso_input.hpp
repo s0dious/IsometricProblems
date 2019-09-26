@@ -6,6 +6,8 @@
 
 #include "glm/vec2.hpp"
 
+#include "iso_character.hpp"
+
 namespace iso
 {
     typedef glm::vec2 MouseInput;
@@ -20,9 +22,20 @@ namespace iso
         Escape
     };
 
+    enum class InputType
+    {
+        Keyboard,
+        Network
+    };
+
     class InputController
     {
-        
+    public:
+        InputController(sf::Window& p_window);
+        void update(std::vector<iso::Character> p_character_list);
+
+    private:
+        sf::Window& m_window;
     };
 
     class Input

@@ -39,6 +39,7 @@ int main()
     // Create OpenGL context with SFML
     sf::Window window(sf::VideoMode(1280, 720), "OpenGL", sf::Style::Default, settings);
     window.setMouseCursorVisible(false);
+    window.setFramerateLimit(60);
 
     // GLAD will find the proper opengl functions at runtime for cross platform compatability
     gladLoadGL();

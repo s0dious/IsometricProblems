@@ -1,3 +1,7 @@
+Character:
+    physics_id - foreign key
+    double_jump_count - int
+
 Physics attribute:
     movement_speed - float
     backwards_ratio - float

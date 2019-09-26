@@ -3,6 +3,8 @@
 
 #include "glm/vec3.hpp"
 
+#include "iso_database.hpp"
+
 namespace iso
 {
     class Physics
