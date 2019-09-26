@@ -27,6 +27,13 @@ namespace iso
 
         bool m_should_close;
     };
+
+    class Character
+    {
+    public:
+        Character()
+    private:
+    };
 }
 
 #endif

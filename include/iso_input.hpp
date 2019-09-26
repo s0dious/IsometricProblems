@@ -20,6 +20,11 @@ namespace iso
         Escape
     };
 
+    class InputController
+    {
+        
+    };
+
     class Input
     {
     public:
