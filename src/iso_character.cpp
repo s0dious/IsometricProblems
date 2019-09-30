@@ -2,87 +2,75 @@
 
 namespace iso
 {
-    Character::Character(iso::Input& p_input, iso::Physics& p_physics, iso::Camera& p_camera):
-        m_input(p_input),
-        m_physics(p_physics),
-        m_camera(p_camera) 
-    { }
-
-    void Character::update(float p_time_delta, bool p_lock_y = true)
+    Character::Character(iso::CharacterModel p_character_model, glm::vec3 p_position, iso::InputType p_input_type, iso::CameraType p_camera_type):
+        m_physics(p_character_model.physics),
+        m_input_type(p_input_type),
+        m_double_jump_count(2),
+        m_position(p_position),
+        m_speed(0.0f, 0.0f, 0.0f),
+        m_acceleration(0.0f, 0.0f, 0.0f),
+        m_front(0.0f, 0.0f, 0.0f),
+        m_up(0.0f, 0.0f, 0.0f),
+        m_right(0.0f, 0.0f, 0.0f),
+        m_yaw(90.0f),
+        m_pitch(0.0f),
+        m_remaining_double_jump_count(2),
+        m_animation_frame(0)
     {
-        //temp
-        float m_speed = 10.0f;
+    }
 
-        // Get input
-        glm::vec3 movement_speed(0.0f, 0.0f, 0.0f);
 
-        std::vector<iso::KeyboardInput> current_input = m_input.poll_keyboard();
-        for(std::vector<iso::KeyboardInput>::size_type i = 0; i < current_input.size(); i++)
+    void CharacterController::update_input(std::vector<iso::Character> p_character_list, float p_time_delta) 
+    {
+        // Update each character based on their new input state
+        for(std::vector<iso::Character>::size_type i = 0; i < p_character_list.size(); i++)
         {
-            switch(current_input[i])
+            iso::Character& current_character = p_character_list[i];
+        
+            // Update keyboard input
+            for(std::vector<iso::KeyboardInput>::size_type i = 0; i < current_character.m_keyboard_input.size(); i++)
             {
-                case iso::KeyboardInput::Up:
-                    glm::vec3 front = m_camera.get_front();
-                    if(p_lock_y)
-                    {
-                        movement_speed += glm::normalize(glm::vec3(front.x, 0.0f, front.z)) * p_time_delta * m_speed;
-                    }
-                    else
-                    {
-                        movement_speed += front * p_time_delta * m_speed;
-                    }
-                    break;
-                case iso::KeyboardInput::Right:
-                    glm::vec3 right = m_camera.get_right();
-                    if(p_lock_y)
-                    {
-                        movement_speed += glm::normalize(glm::vec3(right.x, 0.0f, right.z)) * p_time_delta * m_speed;
-                    }
-                    {
-                        movement_speed += right * p_time_delta * m_speed;
-                    }
-                    break;
-                case iso::KeyboardInput::Down:
-                    glm::vec3 front = m_camera.get_front();
-                    if(p_lock_y)
-                    {
-                        movement_speed -= glm::normalize(glm::vec3(front.x, 0.0f, front.z)) * p_time_delta * m_speed;
-                    }
-                    else
-                    {
-                        movement_speed -= front * p_time_delta * m_speed;
-                    }
-                    break;
-                case iso::KeyboardInput::Left:
-
-                    break;
-                case iso::KeyboardInput::Space:
-
-                    break;
-                case iso::KeyboardInput::Escape:
-                    m_should_close = true;
-                    break;
+                switch(current_character.m_keyboard_input[i])
+                {
+                    case iso::KeyboardInput::Up:
+                        current_character.m_position += glm::normalize(glm::vec3(current_character.m_front.x, 0.0f, current_character.m_front.z)) * p_time_delta * current_character.m_physics.movement_speed;
+                        break;
+                    case iso::KeyboardInput::Down:
+                    current_character.m_position -= glm::normalize(glm::vec3(current_character.m_front.x, 0.0f, current_character.m_front.z)) * p_time_delta * current_character.m_physics.movement_speed;
+                        break;
+                    case iso::KeyboardInput::Right:
+                        current_character.m_position += glm::normalize(glm::vec3(current_character.m_right.x, 0.0f, current_character.m_right.z)) * p_time_delta * current_character.m_physics.movement_speed;
+                        break;
+                    case iso::KeyboardInput::Left:
+                        current_character.m_position -= glm::normalize(glm::vec3(current_character.m_right.x, 0.0f, current_character.m_right.z)) * p_time_delta * current_character.m_physics.movement_speed;
+                        break;
+                    case iso::KeyboardInput::Space:
+                        break;
+                    default:
+                        break;
+                }
             }
+
+
+            // Update mouse input
+            glm::vec2 mouse_input = current_character.m_mouse_input;
+
+            current_character.m_pitch = 0.0f - mouse_input.y/6.0f;
+
+            glm::vec3 t_front;
+            t_front.x = cos(glm::radians(current_character.m_yaw)) * cos(glm::radians(current_character.m_pitch));
+            t_front.y = sin(glm::radians(current_character.m_pitch));
+            t_front.z = sin(glm::radians(current_character.m_yaw)) * cos(glm::radians(current_character.m_pitch));
+
+            current_character.m_front = glm::normalize(t_front);
+
+            current_character.m_right = glm::normalize(glm::cross(current_character.m_front, current_character.m_up));
+            current_character.m_up = glm::normalize(glm::cross(current_character.m_right, current_character.m_front));
         }
 
-        // Update Physics
-
-        // Update Camera
-
-    }
-
-    bool Character::close_requested()
-    {
-        return m_should_close;
-    }
-
-    glm::vec3 Character::get_position()
-    {
-
-    }
-
-    glm::mat4 Character::get_view_matrix()
-    {
-
+        // for(std::vector<iso::Character>::size_type i = 0; i < p_character_list.size(); i++)
+        // {
+        //     iso::Character& current_character = p_character_list[i];    
+        // }
     }
 }

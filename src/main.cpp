@@ -16,9 +16,11 @@
 
 // Project files
 #include "iso_camera.hpp"
+#include "iso_database.hpp"
 #include "iso_input.hpp"
 #include "iso_map.hpp"
 #include "iso_model.hpp"
+#include "iso_physics.hpp"
 #include "iso_shader.hpp"
 
 #include "octree/octree.h"
@@ -136,6 +138,23 @@ int main()
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), ((void*)(3*sizeof(float))));
     glEnableVertexAttribArray(1);
 
+    // Intialize controllers
+
+    iso::InputController input_controller(window);
+    iso::CharacterController character_controller;
+    // iso::PhysicsController physics_controller;
+    iso::CameraController camera_controller;
+
+    std::vector<iso::Character> game_characters;
+
+    iso::CharacterModel character_model(iso::PhysicsModel(1.0f, 0.8f, 0.5f, 1.0f, 0.3f, 0.2f, 1.0f));
+    iso::Character character(character_model,
+                            glm::vec3(0.0f, 0.0f, 0.0f),
+                            iso::InputType::Keyboard,
+                            iso::CameraType::ThirdPerson);
+
+    game_characters.push_back(character);
+
     // Initialize window state
     float screen_width = 1280.0f;
     float screen_height = 720.0f;
@@ -153,24 +172,22 @@ int main()
     GLuint frames_per_print = 200;
     GLuint frames_print_count = frames_per_print;
 
-    iso::Camera camera(glm::vec3(0.0f, 2.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-    camera.set_origin(screen_width/2, screen_height/2);
+    // iso::Camera camera(glm::vec3(0.0f, 2.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    // camera.set_origin(screen_width/2, screen_height/2);
 
-    iso::LocalInput user_input(window);
+    // iso::LocalInput user_input(window);
 
-    camera.set_mouse((float)sf::Mouse::getPosition(window).x, (float)sf::Mouse::getPosition(window).y);
+    // camera.set_mouse((float)sf::Mouse::getPosition(window).x, (float)sf::Mouse::getPosition(window).y);
 
     // Event loop where all the magic happens
-    bool should_close = false;
-    while(!should_close) 
+    while(window.isOpen())
     {
         // Update game state
-        glm::vec3 camera_position_delta(0.0f, 0.0f, 0.0f);
-        camera.set_mouse((float)sf::Mouse::getPosition(window).x, (float)sf::Mouse::getPosition(window).y);
+        // glm::vec3 camera_position_delta(0.0f, 0.0f, 0.0f);
+        // camera.set_mouse((float)sf::Mouse::getPosition(window).x, (float)sf::Mouse::getPosition(window).y);
 
-        sf::Mouse::setPosition(sf::Vector2i(640, 360), window);
+        // sf::Mouse::setPosition(sf::Vector2i(640, 360), window);
 
-        // std::cout << (float)sf::Mouse::getPosition(window).x << " " << (float)sf::Mouse::getPosition(window).y << std::endl;
 
         current_time = game_clock.getElapsedTime().asSeconds();
         float time_delta = current_time - previous_time;
@@ -178,56 +195,59 @@ int main()
 
         // std::cout << time_delta.asSeconds() << std::endl;
 
-
         // Display game state
         float fps = 1.0f / time_delta;
 
         if(--frames_print_count == 0)
         {
+            glm::vec3 current_position = camera_controller.get_position(game_characters[0]);
+
             std::cout << "FPS: " << fps << std::endl;
-            std::cout << "(" << camera.get_position().x << ", " << camera.get_position().y << ", " << camera.get_position().z << ")" << std::endl;
+            std::cout << current_position.x << " " << current_position.y << " " << current_position.z << std::endl;
             
             frames_print_count = frames_per_print;
         }
         
-        std::vector<iso::KeyboardInput> current_input = user_input.poll_keyboard();
-        for(std::vector<iso::KeyboardInput>::size_type i = 0; i < current_input.size(); i++)
-        {
-            switch(current_input[i])
-            {
-                case iso::KeyboardInput::Up:
-                    break;
-                case iso::KeyboardInput::Right:
-                    break;
-                case iso::KeyboardInput::Down:
-                    break;
-                case iso::KeyboardInput::Left:
-                    break;
-                case iso::KeyboardInput::Space:
-                    break;
-                case iso::KeyboardInput::Escape:
-                    window.close();
-                    break;
-            }
-        }
+        // std::vector<iso::KeyboardInput> current_input = user_input.poll_keyboard();
+        // for(std::vector<iso::KeyboardInput>::size_type i = 0; i < current_input.size(); i++)
+        // {
+        //     switch(current_input[i])
+        //     {
+        //         case iso::KeyboardInput::Up:
+        //             break;
+        //         case iso::KeyboardInput::Right:
+        //             break;
+        //         case iso::KeyboardInput::Down:
+        //             break;
+        //         case iso::KeyboardInput::Left:
+        //             break;
+        //         case iso::KeyboardInput::Space:
+        //             break;
+        //         case iso::KeyboardInput::Escape:
+        //             window.close();
+        //             break;
+        //     }
+        // }
 
-        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
-        {
-            camera.forward(time_delta);
-        }
-        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
-        {
-            camera.right(time_delta);
-        }
-        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
-        {
-            camera.left(time_delta);
-        }
-        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
-        {
-            camera.backward(time_delta);
-        }
+        // if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+        // {
+        //     camera.forward(time_delta);
+        // }
+        // if(sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+        // {
+        //     camera.right(time_delta);
+        // }
+        // if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+        // {
+        //     camera.left(time_delta);
+        // }
+        // if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
+        // {
+        //     camera.backward(time_delta);
+        // }
 
+        input_controller.update(game_characters);
+        character_controller.update_input(game_characters, time_delta);
 
         // Clear screen
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
@@ -235,7 +255,7 @@ int main()
 
         // Activate our shader program
         voxel_shader.use();
-        voxel_shader.set_uniform("viewPos", camera.get_position());
+        voxel_shader.set_uniform("viewPos", camera_controller.get_position(game_characters[0]));
         
         glm::vec3 current_light_position(light_position.x + 5*sin(current_time) , light_position.y, light_position.z + 5*cos(current_time));
         iso::Material material(glm::vec3(1.0f, 0.0f, 0.2f), glm::vec3(1.0f, 0.2f, 0.3f), glm::vec3(0.5f, 0.5f, 0.2f), 32.0f);
@@ -248,7 +268,7 @@ int main()
         glm::mat4 view = glm::mat4(1.0f);
         glm::mat4 projection = glm::mat4(1.0f);
         projection = glm::perspective(glm::radians(45.0f), screen_width/screen_height, 0.1f, 100.0f);
-        view = camera.get_view();
+        view = camera_controller.get_view(game_characters[0]);
 
         voxel_shader.set_uniform("projection", projection);
         voxel_shader.set_uniform("view", view);

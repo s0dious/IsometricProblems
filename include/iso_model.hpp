@@ -6,11 +6,6 @@
 
 namespace iso
 {
-    class Model
-    {
-
-    };
-
     class Material
     {
     public:

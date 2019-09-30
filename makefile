@@ -8,7 +8,7 @@ sfml_flags 	= -lsfml-system -lsfml-window
 misc_flags  = -ldl
 flags 		= ${gl_flags} ${sfml_flags} ${misc_flags} ${cpp_flags}
 
-iso_modules = camera character input map model shader
+iso_modules = camera character database input map model shader
 
 # Paths
 include		= -I./include
@@ -30,6 +30,9 @@ camera: src/iso_camera.cpp
 
 character: src/iso_character.cpp
 	g++ -c src/iso_character.cpp -o build/character.o ${flags} ${include}
+
+database: src/iso_database.cpp
+	g++ -c src/iso_database.cpp -o build/database.o ${flags} ${include}
 
 input: src/iso_input.cpp
 	g++ -c src/iso_input.cpp -o build/input.o ${flags} ${include}

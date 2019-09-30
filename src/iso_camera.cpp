@@ -1,144 +1,49 @@
 #include <iso_camera.hpp>
 #include <iostream>
 
-iso::Camera::Camera(
-    glm::vec3 p_position, 
-    glm::vec3 p_front, 
-    glm::vec3 p_up, 
-    GLfloat p_yaw, GLfloat p_pitch, 
-    float p_speed, float p_sensitivity,
-    float p_origin_mouse_x, float p_origin_mouse_y,
-    float p_max_mouse_x, float p_max_mouse_y)
+#include "iso_camera.hpp"
+
+namespace iso
 {
-    m_position = p_position;
-    m_front = p_front;
-    m_global_up = p_up;
-
-    m_yaw = p_yaw;
-    m_pitch = p_pitch;
-    m_zoom = 45.0f;
-
-    m_sensitivity = p_sensitivity;
-    m_speed = p_speed;
-
-    m_origin_mouse_x = p_origin_mouse_x;
-    m_origin_mouse_y = p_origin_mouse_y;
-
-    update();
-}
-
-void iso::Camera::set_mouse(float p_mouse_x, float p_mouse_y)
-{
-    // std::cout << "mouse change: " << m_origin_mouse_x - p_mouse_x << " " << m_origin_mouse_y - p_mouse_y << std::endl;
-
-    float x_delta = 0.0f;
-    float y_delta = 0.0f;
-
-    // float x_delta = m_sensitivity * -1 * (m_origin_mouse_x - p_mouse_x);
-    // float y_delta = m_sensitivity * -1 * (m_origin_mouse_y - p_mouse_y);
-
-    int multiplier = 5;
-    if(m_origin_mouse_x - p_mouse_x > 0)
+    void CameraController::update(std::vector<iso::Character> p_character_list)
     {
-        x_delta = -1 * multiplier * m_sensitivity;
-    }
-    if(m_origin_mouse_x - p_mouse_x < 0)
-    {
-        x_delta = multiplier * m_sensitivity;
-    }
-    if(m_origin_mouse_y - p_mouse_y > 0)
-    {
-        y_delta = -1 * multiplier * m_sensitivity;
-    }
-    if(m_origin_mouse_y - p_mouse_y < 0)
-    {
-        y_delta = multiplier * m_sensitivity;
+        // update the 
+        // for(std::vector<iso::Character>::size_type i = 0; i < p_character_list.size(); i++)
+        // {
+        //     iso::Character& current_character = p_character_list[i];
+        // }
     }
 
-    // std::cout << "x y delta: "  << "<" << x_delta << ", " << y_delta << ">" << std::endl;
 
-    m_yaw += x_delta;
-    m_pitch += y_delta;
-
-    // std::cout << "yaw pitch: " << m_yaw << " " << m_pitch << std::endl;
-
-    if(m_pitch > 89.0f)
+    glm::mat4 CameraController::get_view(iso::Character p_character)
     {
-        m_pitch = 89.0f;
+        glm::mat4 view_matrix;
+
+        switch(p_character.m_camera_type)
+        {
+            case iso::CameraType::ThirdPerson:
+                    view_matrix = glm::lookAt(p_character.m_position, p_character.m_position + p_character.m_front, p_character.m_up);
+                break;
+            default:
+                break;
+        }
+        
+        return view_matrix;
     }
-    if(m_pitch < -89.0f)
+
+    glm::vec3 CameraController::get_position(iso::Character p_character)
     {
-        m_pitch = -89.0f;
+        glm::vec3 position_vector;
+
+        switch(p_character.m_camera_type)
+        {
+            case iso::CameraType::ThirdPerson:
+                    position_vector = p_character.m_position;
+                break;
+            default:
+                break;
+        }
+        
+        return position_vector;
     }
-
-    update();
-}
-
-void iso::Camera::forward(float p_time_delta, GLboolean p_lock_y)
-{
-    if(p_lock_y)
-    {
-        m_position += glm::normalize(glm::vec3(m_front.x, 0.0f, m_front.z)) * p_time_delta * m_speed;
-    }
-    else
-    {
-        m_position += m_front * p_time_delta * m_speed;
-    }
-}
-
-void iso::Camera::backward(float p_time_delta, GLboolean p_lock_y)
-{
-    if(p_lock_y)
-    {
-        m_position -= glm::normalize(glm::vec3(m_front.x, 0.0f, m_front.z)) * p_time_delta * m_speed;
-    }
-    else
-    {
-        m_position -= m_front * p_time_delta * m_speed; 
-    }
-}
-
-void iso::Camera::right(float p_time_delta, GLboolean p_lock_y)
-{
-    if(p_lock_y)
-    {
-        m_position += glm::normalize(glm::vec3(m_right.x, 0.0f, m_right.z)) * p_time_delta * m_speed;
-    }
-    {
-        m_position += m_right * p_time_delta * m_speed;
-    }
-}
-
-void iso::Camera::left(float p_time_delta, GLboolean p_lock_y)
-{
-    if(p_lock_y)
-    {
-        m_position -= glm::normalize(glm::vec3(m_right.x, 0.0f, m_right.z)) * p_time_delta * m_speed;
-    }
-    {
-        m_position -= m_right * p_time_delta * m_speed;
-    }
-}
-
-glm::mat4 iso::Camera::get_view()
-{
-    return glm::lookAt(m_position, m_position + m_front, m_up);
-}
-
-void iso::Camera::update()
-{
-    glm::vec3 t_front;
-    t_front.x = cos(glm::radians(m_yaw)) * cos(glm::radians(m_pitch));
-    t_front.y = sin(glm::radians(m_pitch));
-    t_front.z = sin(glm::radians(m_yaw)) * cos(glm::radians(m_pitch));
-
-    m_front = glm::normalize(t_front);
-
-    m_right = glm::normalize(glm::cross(m_front, m_global_up));
-    m_up = glm::normalize(glm::cross(m_right, m_front));
-}
-
-void iso::Camera::set_position(glm::vec3 p_position)
-{
-    m_position = p_position;
 }

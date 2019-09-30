@@ -33,16 +33,15 @@ namespace iso
          */
         PhysicsModel(uint p_physics_id);
 
-    private:
-        const std::string c_table_name = "physics";
+        const std::string table_name = "physics";
 
-        const float m_movement_speed;
-        const float m_backwards_ratio;
-        const float m_drift_acceleration;
-        const float m_max_drift_speed;
-        const float m_gravity;
-        const float m_traction;
-        const float m_weight;
+        const float movement_speed;
+        const float backwards_ratio;
+        const float drift_acceleration;
+        const float max_drift_speed;
+        const float gravity;
+        const float traction;
+        const float weight;
     };
 
 
@@ -58,11 +57,11 @@ namespace iso
          *  Database Constructor
          */
         CharacterModel(uint p_character_id);
-    private:
-        const std::string c_table_name = "character";
 
-        const PhysicsModel m_physics;
-        const uint m_double_jump_count;
+        const std::string table_name = "character";
+
+        const PhysicsModel physics;
+        const uint double_jump_count;
     };
 };
 
