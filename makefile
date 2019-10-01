@@ -4,7 +4,7 @@ executable 	= game
 # Flag variables
 cpp_flags	= -std=c++11 -Wall -Werror
 gl_flags	= -lGL
-sfml_flags 	= -lsfml-system -lsfml-window
+sfml_flags 	= -lsfml-system -lsfml-window -lsfml-graphics
 misc_flags  = -ldl
 flags 		= ${gl_flags} ${sfml_flags} ${misc_flags} ${cpp_flags}
 

@@ -12,7 +12,7 @@ namespace iso
 {
     class PhysicsController
     {
-        void update(std::vector<iso::Character> p_character_list);
+        void update(std::vector<iso::Character>& p_character_list);
     };
 }
 

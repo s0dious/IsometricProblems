@@ -13,9 +13,9 @@ namespace iso
     class CameraController
     {
     public:
-        void update(std::vector<iso::Character> p_character_list);
-        glm::mat4 get_view(iso::Character p_character);
-        glm::vec3 get_position(iso::Character p_character);
+        void update(std::vector<iso::Character>& p_character_list);
+        glm::mat4 get_view(const iso::Character& p_character);
+        glm::vec3 get_position(const iso::Character& p_character);
     };
 };
 

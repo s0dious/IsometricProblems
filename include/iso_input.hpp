@@ -14,7 +14,7 @@ namespace iso
     {
     public:
         InputController(sf::Window& p_window);
-        void update(std::vector<iso::Character> p_character_list);
+        void update(std::vector<iso::Character>& p_character_list);
 
     private:
         sf::Window& m_window;

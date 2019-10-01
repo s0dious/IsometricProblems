@@ -7,6 +7,7 @@
 
 // SFML Libraries
 #include <SFML/Window.hpp>
+#include <SFML/Graphics.hpp>
 
 // OpenGL Libraries
 #include <glad/glad.h>
@@ -36,11 +37,13 @@ int main()
     // Target OpenGL version 3.3 Core
     settings.majorVersion = 3;
     settings.minorVersion = 3;
-    settings.attributeFlags = sf::ContextSettings::Core;
+    settings.attributeFlags = sf::ContextSettings::Default;
 
     // Create OpenGL context with SFML
-    sf::Window window(sf::VideoMode(1280, 720), "OpenGL", sf::Style::Default, settings);
-    window.setMouseCursorVisible(false);
+    // sf::Window window(sf::VideoMode(1920, 1080), "OpenGL", sf::Style::None, settings);
+    sf::RenderWindow window(sf::VideoMode(1920, 1080), "OpenGL", sf::Style::None, settings);
+    // window.setActive();
+    // window.setMouseCursorVisible(false);
     window.setFramerateLimit(60);
 
     // GLAD will find the proper opengl functions at runtime for cross platform compatability
@@ -147,17 +150,17 @@ int main()
 
     std::vector<iso::Character> game_characters;
 
-    iso::CharacterModel character_model(iso::PhysicsModel(1.0f, 0.8f, 0.5f, 1.0f, 0.3f, 0.2f, 1.0f));
+    iso::CharacterModel character_model(iso::PhysicsModel(10.0f, 0.8f, 0.5f, 1.0f, 0.3f, 0.2f, 1.0f));
     iso::Character character(character_model,
-                            glm::vec3(0.0f, 0.0f, 0.0f),
+                            glm::vec3(64.0f, 2.0f, 64.0f),
                             iso::InputType::Keyboard,
                             iso::CameraType::ThirdPerson);
 
     game_characters.push_back(character);
 
-    // Initialize window state
-    float screen_width = 1280.0f;
-    float screen_height = 720.0f;
+    // // Initialize window state
+    float screen_width = 1920.0f;
+    float screen_height = 1080.0f;
 
     glEnable(GL_DEPTH_TEST);
 
@@ -172,22 +175,9 @@ int main()
     GLuint frames_per_print = 200;
     GLuint frames_print_count = frames_per_print;
 
-    // iso::Camera camera(glm::vec3(0.0f, 2.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-    // camera.set_origin(screen_width/2, screen_height/2);
-
-    // iso::LocalInput user_input(window);
-
-    // camera.set_mouse((float)sf::Mouse::getPosition(window).x, (float)sf::Mouse::getPosition(window).y);
-
     // Event loop where all the magic happens
     while(window.isOpen())
     {
-        // Update game state
-        // glm::vec3 camera_position_delta(0.0f, 0.0f, 0.0f);
-        // camera.set_mouse((float)sf::Mouse::getPosition(window).x, (float)sf::Mouse::getPosition(window).y);
-
-        // sf::Mouse::setPosition(sf::Vector2i(640, 360), window);
-
 
         current_time = game_clock.getElapsedTime().asSeconds();
         float time_delta = current_time - previous_time;
@@ -207,44 +197,6 @@ int main()
             
             frames_print_count = frames_per_print;
         }
-        
-        // std::vector<iso::KeyboardInput> current_input = user_input.poll_keyboard();
-        // for(std::vector<iso::KeyboardInput>::size_type i = 0; i < current_input.size(); i++)
-        // {
-        //     switch(current_input[i])
-        //     {
-        //         case iso::KeyboardInput::Up:
-        //             break;
-        //         case iso::KeyboardInput::Right:
-        //             break;
-        //         case iso::KeyboardInput::Down:
-        //             break;
-        //         case iso::KeyboardInput::Left:
-        //             break;
-        //         case iso::KeyboardInput::Space:
-        //             break;
-        //         case iso::KeyboardInput::Escape:
-        //             window.close();
-        //             break;
-        //     }
-        // }
-
-        // if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
-        // {
-        //     camera.forward(time_delta);
-        // }
-        // if(sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
-        // {
-        //     camera.right(time_delta);
-        // }
-        // if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
-        // {
-        //     camera.left(time_delta);
-        // }
-        // if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
-        // {
-        //     camera.backward(time_delta);
-        // }
 
         input_controller.update(game_characters);
         character_controller.update_input(game_characters, time_delta);
@@ -284,6 +236,20 @@ int main()
                 glDrawArrays(GL_TRIANGLES, 0, 36);
             }   
         );
+
+        // Draw cursor
+        window.pushGLStates();
+
+        window.resetGLStates();
+
+        // sf::RectangleShape cursor(sf::Vector2f(100.0f, 100.0f));
+        // cursor.setPosition(sf::Vector2f(1920.0f/2.0f - 5.0f, 1080/2.0f - 5.0f));
+        // cursor.setFillColor(sf::Color(255, 255, 255, 255));
+        // window.draw(cursor);
+
+        // // window.setActive();
+        window.popGLStates();
+
 
         window.display();
 

@@ -17,7 +17,8 @@ namespace iso
     enum class CameraType
     {
         FirstPerson,
-        ThirdPerson
+        ThirdPerson,
+        None
     };
 
     enum class InputType
@@ -79,8 +80,8 @@ namespace iso
     class CharacterController
     {
     public:
-        void update_input(std::vector<iso::Character> p_character_list, float p_time_delta);
-        void update_collision(std::vector<iso::Character> p_character_list);
+        void update_input(std::vector<iso::Character>& p_character_list, const float p_time_delta);
+        void update_collision(std::vector<iso::Character>& p_character_list);
     private:
     };
 }
