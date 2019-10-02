@@ -33,7 +33,6 @@ namespace iso
 
         if(p_character.m_camera_type == iso::CameraType::ThirdPerson)
         {
-            std::cout << "3rd" << std::endl;
             position_vector = p_character.m_position;
         }
         

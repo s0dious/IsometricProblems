@@ -8,9 +8,44 @@
 #include "octree/octree.h"
 #include "glad/glad.h"
 #include "glm/vec3.hpp"
+#include "glm/vec4.hpp"
 
 namespace iso
 {
+    class VoxelMap
+    {
+    public:
+        VoxelMap(size_t p_size);
+        void draw(glm::vec3 p_camera);
+        glm::vec4& operator()(size_t x, size_t y, size_t z); 
+
+    private:
+        void flatten();
+        void prepare();
+        void bind();
+        void buffer();
+
+        size_t m_size;
+        Octree<glm::vec4> m_data;
+
+        bool m_flat = false;
+        std::vector<std::pair<glm::vec3, glm::vec4> > m_flat_data;
+
+        bool m_prepared = false;
+        std::vector<float> m_prepared_data;
+        std::vector<GLuint> m_prepared_indices;
+
+        // GL objects
+        bool m_bound;
+        bool m_buffered;
+
+        GLuint m_vertex_array_object;
+        GLuint m_vertex_buffer_object; 
+        GLuint m_element_buffer_object;
+    };
+
+
+
     template< typename T >
     class Map
     {

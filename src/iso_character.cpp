@@ -36,9 +36,7 @@ namespace iso
                 switch(current_character.m_keyboard_input[i])
                 {
                     case iso::KeyboardInput::Up:
-                        std::cout << "CharacterController: up" << std::endl;
                         current_character.m_speed += glm::normalize(glm::vec3(current_character.m_front.x, 0.0f, current_character.m_front.z)) * p_time_delta * current_character.m_physics.movement_speed;
-                        std::cout << current_character.m_position.x << " " << current_character.m_position.y << " " << current_character.m_position.z << std::endl;
                         break;
                     case iso::KeyboardInput::Down:
                     current_character.m_speed -= glm::normalize(glm::vec3(current_character.m_front.x, 0.0f, current_character.m_front.z)) * p_time_delta * current_character.m_physics.movement_speed;

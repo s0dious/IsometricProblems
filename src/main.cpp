@@ -37,7 +37,7 @@ int main()
     // Target OpenGL version 3.3 Core
     settings.majorVersion = 3;
     settings.minorVersion = 3;
-    settings.attributeFlags = sf::ContextSettings::Default;
+    settings.attributeFlags = sf::ContextSettings::Core;
 
     // Create OpenGL context with SFML
     sf::RenderWindow window(sf::VideoMode(1920, 1080), "OpenGL", sf::Style::None, settings);
@@ -61,85 +61,151 @@ int main()
     // Define vertex and index data
 
     // A cube
-    float vertices[] = {
-        -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-         0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-         0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-         0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-        -0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+    // float vertices[] = 
+    // {
+    //     -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+    //      0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+    //      0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+    //      0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+    //     -0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+    //     -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
 
-        -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-         0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-         0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-         0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-        -0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+    //     -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+    //      0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+    //      0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+    //      0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+    //     -0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+    //     -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
 
-        -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-        -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-        -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-        -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-        -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-        -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+    //     -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+    //     -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+    //     -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+    //     -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+    //     -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+    //     -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
 
-         0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-         0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-         0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-         0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-         0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-         0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+    //      0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+    //      0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+    //      0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+    //      0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+    //      0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+    //      0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
 
-        -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-         0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-         0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-         0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+    //     -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+    //      0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+    //      0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+    //      0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+    //     -0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+    //     -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
 
-        -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
-         0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
-         0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-         0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-        -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-        -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
-    };
+    //     -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+    //      0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+    //      0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+    //      0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+    //     -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+    //     -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
+    // };
+
+    // float vertices[] = 
+    // {
+    //     -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+    //      0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+    //      0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+    //     -0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+
+    //     -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+    //      0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+    //      0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+    //     -0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+
+    //     -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+    //     -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+    //     -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+    //     -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+
+    //      0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+    //      0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+    //      0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+    //      0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+
+    //     -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+    //      0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+    //      0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+    //     -0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+
+    //     -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+    //      0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+    //      0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+    //     -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+    // };
+
+    // int indices[] =
+    // {
+    //     0, 1, 2,
+    //     2, 3, 1,
+
+    //     4, 5, 6,
+    //     6, 7, 5,
+
+    //     8, 9, 10,
+    //     10, 11, 8,
+
+    //     12, 13, 14,
+    //     14, 15, 12,
+
+    //     16, 17, 18,
+    //     18, 19, 16,
+
+    //     20, 21, 22,
+    //     22, 23, 20
+    // };
 
     // Octree<glm::vec3> game_map(128);
-    iso::Map<glm::vec3> game_map(128);
+    // iso::Map<glm::vec3> game_map(128);
+
+    // for(GLint i = 0; i < 128; i++)
+    // {
+    //     for(GLint j = 0; j < 128; j++)
+    //     {
+    //         game_map.data(i, j, 0) = glm::vec3((float)i, 0.0f, (float)j);
+    //     }
+    // }
+
+    iso::VoxelMap game_map(128);
 
     for(GLint i = 0; i < 128; i++)
     {
         for(GLint j = 0; j < 128; j++)
         {
-            game_map.data(i, j, 0) = glm::vec3((float)i, -2.0f, (float)j);
+            game_map(i, j, 0) = glm::vec4((float)i, 0.0f, (float)j, 1.0f);
         }
     }
 
-    // Create vertex array and buffer objects
-    GLuint vertex_array_object, vertex_buffer_object; //, element_buffer_object;
+    // // Create vertex array and buffer objects
+    // GLuint vertex_array_object, vertex_buffer_object, element_buffer_object;
 
-    glGenVertexArrays(1, &vertex_array_object);
-    glGenBuffers(1, &vertex_buffer_object);
+    // glGenVertexArrays(1, &vertex_array_object);
+    // glGenBuffers(1, &vertex_buffer_object);
     // glGenBuffers(1, &element_buffer_object);
 
-    // Bind vertex array, buffers, and set attributes
-    glBindVertexArray(vertex_array_object);
+    // // Bind vertex array, buffers, and set attributes
+    // glBindVertexArray(vertex_array_object);
 
-    glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_object);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    // glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_object);
+    // glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
     // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, element_buffer_object);
     // glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6*sizeof(GLfloat), (void*)0);
-    glEnableVertexAttribArray(0);
+    // // Location data uniform
+    // glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6*sizeof(GLfloat), (void*)0);
+    // glEnableVertexAttribArray(0);
 
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), ((void*)(3*sizeof(float))));
-    glEnableVertexAttribArray(1);
+    // // Normal data uniform
+    // glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), ((void*)(3*sizeof(float))));
+    // glEnableVertexAttribArray(1);
 
     // Intialize controllers
-
     iso::InputController input_controller(window);
     iso::CharacterController character_controller;
     iso::PhysicsController physics_controller;
@@ -220,26 +286,32 @@ int main()
         projection = glm::perspective(glm::radians(45.0f), screen_width/screen_height, 0.1f, 100.0f);
         view = camera_controller.get_view(game_characters[0]);
 
+        glm::mat4 model = glm::mat4(1.0f);
+
         voxel_shader.set_uniform("projection", projection);
         voxel_shader.set_uniform("view", view);
+        voxel_shader.set_uniform("model", model);
 
-        glBindVertexArray(vertex_array_object);
+        // glBindVertexArray(vertex_array_object);
 
-        game_map.for_each(
-            [&voxel_shader] (glm::vec3 position, glm::vec3 voxel_color) {
+        // game_map.for_each(
+        //     [&voxel_shader] (glm::vec3 position, glm::vec3 voxel_color) {
 
-                glm::mat4 model = glm::mat4(1.0f);
-                model = glm::translate(model, glm::vec3((float)position.x, 0.0f, (float)position.y));
-                voxel_shader.set_uniform("model", model);
-                glDrawArrays(GL_TRIANGLES, 0, 36);
-            }   
-        );
+        //         glm::mat4 model = glm::mat4(1.0f);
+        //         model = glm::translate(model, glm::vec3((float)position.x, 0.0f, (float)position.y));
+        //         voxel_shader.set_uniform("model", model);
+        //         // glDrawArrays(GL_TRIANGLES, 0, 36);
+        //         glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (void*)0);
+        //     }   
+        // );
+
+        game_map.draw(camera_controller.get_position(game_characters[0]));
 
         window.display();
     }
 
-    glDeleteVertexArrays(1, &vertex_array_object);
-    glDeleteBuffers(1, &vertex_buffer_object);
+    // glDeleteVertexArrays(1, &vertex_array_object);
+    // glDeleteBuffers(1, &vertex_buffer_object);
 
     return 0;
 }
