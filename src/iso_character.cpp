@@ -37,17 +37,17 @@ namespace iso
                 {
                     case iso::KeyboardInput::Up:
                         std::cout << "CharacterController: up" << std::endl;
-                        current_character.m_position += glm::normalize(glm::vec3(current_character.m_front.x, 0.0f, current_character.m_front.z)) * p_time_delta * current_character.m_physics.movement_speed;
+                        current_character.m_speed += glm::normalize(glm::vec3(current_character.m_front.x, 0.0f, current_character.m_front.z)) * p_time_delta * current_character.m_physics.movement_speed;
                         std::cout << current_character.m_position.x << " " << current_character.m_position.y << " " << current_character.m_position.z << std::endl;
                         break;
                     case iso::KeyboardInput::Down:
-                    current_character.m_position -= glm::normalize(glm::vec3(current_character.m_front.x, 0.0f, current_character.m_front.z)) * p_time_delta * current_character.m_physics.movement_speed;
+                    current_character.m_speed -= glm::normalize(glm::vec3(current_character.m_front.x, 0.0f, current_character.m_front.z)) * p_time_delta * current_character.m_physics.movement_speed;
                         break;
                     case iso::KeyboardInput::Right:
-                        current_character.m_position += glm::normalize(glm::vec3(current_character.m_right.x, 0.0f, current_character.m_right.z)) * p_time_delta * current_character.m_physics.movement_speed;
+                        current_character.m_speed += glm::normalize(glm::vec3(current_character.m_right.x, 0.0f, current_character.m_right.z)) * p_time_delta * current_character.m_physics.movement_speed;
                         break;
                     case iso::KeyboardInput::Left:
-                        current_character.m_position -= glm::normalize(glm::vec3(current_character.m_right.x, 0.0f, current_character.m_right.z)) * p_time_delta * current_character.m_physics.movement_speed;
+                        current_character.m_speed -= glm::normalize(glm::vec3(current_character.m_right.x, 0.0f, current_character.m_right.z)) * p_time_delta * current_character.m_physics.movement_speed;
                         break;
                     case iso::KeyboardInput::Space:
                         break;
@@ -56,7 +56,6 @@ namespace iso
                 }
             }
             current_character.m_keyboard_input.clear();
-
 
             // Update mouse input
             glm::vec2 mouse_input = current_character.m_mouse_input;

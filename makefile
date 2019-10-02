@@ -8,7 +8,7 @@ sfml_flags 	= -lsfml-system -lsfml-window -lsfml-graphics
 misc_flags  = -ldl
 flags 		= ${gl_flags} ${sfml_flags} ${misc_flags} ${cpp_flags}
 
-iso_modules = camera character database input map model shader
+iso_modules = camera character database input map model physics shader
 
 # Paths
 include		= -I./include
@@ -42,6 +42,9 @@ map: src/iso_map.cpp
 
 model: src/iso_model.cpp
 	g++ -c src/iso_model.cpp -o build/model.o ${flags} ${include}
+
+physics: src/iso_physics.cpp
+	g++ -c src/iso_physics.cpp -o build/physics.o ${flags} ${include}
 
 shader: src/iso_shader.cpp
 	g++ -c src/iso_shader.cpp -o build/shader.o ${flags} ${include}

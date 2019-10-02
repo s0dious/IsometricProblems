@@ -12,7 +12,8 @@ namespace iso
 {
     class PhysicsController
     {
-        void update(std::vector<iso::Character>& p_character_list);
+    public:
+        void update(std::vector<iso::Character>& p_character_list, float time_delta);
     };
 }
 

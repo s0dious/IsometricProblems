@@ -40,10 +40,7 @@ int main()
     settings.attributeFlags = sf::ContextSettings::Default;
 
     // Create OpenGL context with SFML
-    // sf::Window window(sf::VideoMode(1920, 1080), "OpenGL", sf::Style::None, settings);
     sf::RenderWindow window(sf::VideoMode(1920, 1080), "OpenGL", sf::Style::None, settings);
-    // window.setActive();
-    // window.setMouseCursorVisible(false);
     window.setFramerateLimit(60);
 
     // GLAD will find the proper opengl functions at runtime for cross platform compatability
@@ -145,12 +142,12 @@ int main()
 
     iso::InputController input_controller(window);
     iso::CharacterController character_controller;
-    // iso::PhysicsController physics_controller;
+    iso::PhysicsController physics_controller;
     iso::CameraController camera_controller;
 
     std::vector<iso::Character> game_characters;
 
-    iso::CharacterModel character_model(iso::PhysicsModel(10.0f, 0.8f, 0.5f, 1.0f, 0.3f, 0.2f, 1.0f));
+    iso::CharacterModel character_model(iso::PhysicsModel(10.0f, 0.8f, 0.5f, 1.0f, 0.3f, 0.7f, 1.0f));
     iso::Character character(character_model,
                             glm::vec3(64.0f, 2.0f, 64.0f),
                             iso::InputType::Keyboard,
@@ -200,6 +197,7 @@ int main()
 
         input_controller.update(game_characters);
         character_controller.update_input(game_characters, time_delta);
+        physics_controller.update(game_characters, time_delta);
 
         // Clear screen
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
@@ -237,23 +235,7 @@ int main()
             }   
         );
 
-        // Draw cursor
-        window.pushGLStates();
-
-        window.resetGLStates();
-
-        // sf::RectangleShape cursor(sf::Vector2f(100.0f, 100.0f));
-        // cursor.setPosition(sf::Vector2f(1920.0f/2.0f - 5.0f, 1080/2.0f - 5.0f));
-        // cursor.setFillColor(sf::Color(255, 255, 255, 255));
-        // window.draw(cursor);
-
-        // // window.setActive();
-        window.popGLStates();
-
-
         window.display();
-
-        // should_close = character.close_requested();
     }
 
     glDeleteVertexArrays(1, &vertex_array_object);

@@ -23,6 +23,11 @@ namespace iso
             data = Octree<T>(p_size);
         }
 
+        void draw(glm::vec3 camera)
+        {
+            
+        }
+
         // void for_each(void (*p_func)(T p_data))
         void for_each(std::function<void(glm::vec3, T)> p_func)
         {
