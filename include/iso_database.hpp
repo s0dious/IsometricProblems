@@ -4,6 +4,9 @@
 #include <string>
 #include <sqlite3.h> 
 
+#include "glm/vec3.hpp"
+#include "glad/glad.h"
+
 namespace iso
 {
 
@@ -62,6 +65,70 @@ namespace iso
 
         const PhysicsModel physics;
         const uint double_jump_count;
+    };
+
+
+    class MaterialModel : public Model
+    {
+    public:
+        /**
+         *  Direct constructor
+         */
+        MaterialModel(
+            glm::vec3 p_ambient,
+            glm::vec3 p_diffuse,
+            glm::vec3 p_specular,
+            GLfloat p_shininess )
+            :
+            ambient(p_ambient),
+            diffuse(p_diffuse),
+            specular(p_specular),
+            shininess(p_shininess)
+        {
+
+        }
+
+        /**
+         *  Database constructor
+         */
+        MaterialModel(uint p_material_id);
+
+        glm::vec3 ambient;
+        glm::vec3 diffuse;
+        glm::vec3 specular;
+        GLfloat shininess;
+    };
+
+
+    class LightModel : public Model
+    {
+    public:
+        /**
+         *  Direct constructor
+         */
+        LightModel(
+            glm::vec3 p_position,
+            glm::vec3 p_ambient,
+            glm::vec3 p_diffuse,
+            glm::vec3 p_specular )
+            :
+            position(p_position),
+            ambient(p_ambient),
+            diffuse(p_diffuse),
+            specular(p_specular)
+        {
+
+        }
+
+        /**
+         *  Database constructor
+         */
+        LightModel(uint p_light_id);
+
+        glm::vec3 position;
+        glm::vec3 ambient;
+        glm::vec3 diffuse;
+        glm::vec3 specular;
     };
 };
 

@@ -12,7 +12,7 @@
 #include <glm/mat4x4.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "iso_model.hpp"
+#include "iso_database.hpp"
 
 namespace iso
 {
@@ -50,9 +50,6 @@ namespace iso
         void link();
         void get_error(std::ostream& err = std::cerr);
         void use();
-
-        void apply(iso::Material material);
-        void apply(iso::Light light);
 
         void set_uniform(std::string p_uniform, glm::mat4 mat_four);
         void set_uniform(std::string p_uniform, glm::vec3 vec_three);

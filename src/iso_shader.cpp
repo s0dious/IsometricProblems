@@ -111,29 +111,6 @@ namespace iso
         glUseProgram(m_shader_program_id);
     }
 
-
-    // Render option methods
-
-    /**
-     * Test comment
-     */
-    void ShaderProgram::apply(iso::Material material)
-    {
-        set_uniform("material.ambient", material.get_ambient());
-        set_uniform("material.diffuse", material.get_diffuse());
-        set_uniform("material.specular", material.get_specular());
-        set_uniform("material.shininess", material.get_shininess());
-    }
-
-
-    void ShaderProgram::apply(iso::Light light)
-    {
-        set_uniform("light.position", light.get_position());
-        set_uniform("light.ambient", light.get_ambient());
-        set_uniform("light.diffuse", light.get_diffuse());
-        set_uniform("light.specular", light.get_specular());
-    }
-
     // Set uniform methods
 
     void ShaderProgram::set_uniform(std::string p_uniform, glm::mat4 mat_four)

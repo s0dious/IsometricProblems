@@ -20,7 +20,6 @@
 #include "iso_database.hpp"
 #include "iso_input.hpp"
 #include "iso_map.hpp"
-#include "iso_model.hpp"
 #include "iso_physics.hpp"
 #include "iso_shader.hpp"
 
@@ -41,7 +40,7 @@ int main()
 
     // Create OpenGL context with SFML
     sf::RenderWindow window(sf::VideoMode(1920, 1080), "OpenGL", sf::Style::None, settings);
-    window.setFramerateLimit(60);
+    // window.setFramerateLimit(60);
 
     // GLAD will find the proper opengl functions at runtime for cross platform compatability
     gladLoadGL();
@@ -59,157 +58,25 @@ int main()
     voxel_shader.link();
 
     // Define vertex and index data
-
-    // A cube
-    // float vertices[] = 
-    // {
-    //     -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-    //      0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-    //      0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-    //      0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-    //     -0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-    //     -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-
-    //     -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-    //      0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-    //      0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-    //      0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-    //     -0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-    //     -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-
-    //     -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-    //     -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-    //     -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-    //     -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-    //     -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-    //     -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-
-    //      0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-    //      0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-    //      0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-    //      0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-    //      0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-    //      0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-
-    //     -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-    //      0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-    //      0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-    //      0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-    //     -0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-    //     -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-
-    //     -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
-    //      0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
-    //      0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-    //      0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-    //     -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-    //     -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
-    // };
-
-    // float vertices[] = 
-    // {
-    //     -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-    //      0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-    //      0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-    //     -0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-
-    //     -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-    //      0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-    //      0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-    //     -0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-
-    //     -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-    //     -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-    //     -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-    //     -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-
-    //      0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-    //      0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-    //      0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-    //      0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-
-    //     -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-    //      0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-    //      0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-    //     -0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-
-    //     -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
-    //      0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
-    //      0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-    //     -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-    // };
-
-    // int indices[] =
-    // {
-    //     0, 1, 2,
-    //     2, 3, 1,
-
-    //     4, 5, 6,
-    //     6, 7, 5,
-
-    //     8, 9, 10,
-    //     10, 11, 8,
-
-    //     12, 13, 14,
-    //     14, 15, 12,
-
-    //     16, 17, 18,
-    //     18, 19, 16,
-
-    //     20, 21, 22,
-    //     22, 23, 20
-    // };
-
-    // Octree<glm::vec3> game_map(128);
-    // iso::Map<glm::vec3> game_map(128);
-
-    // for(GLint i = 0; i < 128; i++)
-    // {
-    //     for(GLint j = 0; j < 128; j++)
-    //     {
-    //         game_map.data(i, j, 0) = glm::vec3((float)i, 0.0f, (float)j);
-    //     }
-    // }
-
     iso::VoxelMap game_map(128);
+
+    iso::MaterialModel material(glm::vec3(1.0f, 0.0f, 0.2f), glm::vec3(1.0f, 0.2f, 0.3f), glm::vec3(0.5f, 0.5f, 0.2f), 32.0f);
+    uint material_id = game_map.add_material(material);
 
     for(GLint i = 0; i < 128; i++)
     {
         for(GLint j = 0; j < 128; j++)
         {
-            game_map(i, j, 0) = glm::vec4((float)i, 0.0f, (float)j, 1.0f);
+            std::cout << "Adding " << i << " " << j << std::endl;
+            game_map(i, j, 0) = material_id;
         }
     }
-
-    // // Create vertex array and buffer objects
-    // GLuint vertex_array_object, vertex_buffer_object, element_buffer_object;
-
-    // glGenVertexArrays(1, &vertex_array_object);
-    // glGenBuffers(1, &vertex_buffer_object);
-    // glGenBuffers(1, &element_buffer_object);
-
-    // // Bind vertex array, buffers, and set attributes
-    // glBindVertexArray(vertex_array_object);
-
-    // glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_object);
-    // glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, element_buffer_object);
-    // glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-    // // Location data uniform
-    // glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6*sizeof(GLfloat), (void*)0);
-    // glEnableVertexAttribArray(0);
-
-    // // Normal data uniform
-    // glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), ((void*)(3*sizeof(float))));
-    // glEnableVertexAttribArray(1);
 
     // Intialize controllers
     iso::InputController input_controller(window);
     iso::CharacterController character_controller;
     iso::PhysicsController physics_controller;
-    iso::CameraController camera_controller;
+    iso::CameraController camera_controller(voxel_shader);
 
     std::vector<iso::Character> game_characters;
 
@@ -225,6 +92,9 @@ int main()
     float screen_width = 1920.0f;
     float screen_height = 1080.0f;
 
+    std::vector<iso::VoxelSet> game_map_drawable = game_map.get_drawable();
+    camera_controller.set((std::vector<iso::Drawable>&)game_map_drawable);
+
     glEnable(GL_DEPTH_TEST);
 
     // Initialize game state
@@ -235,9 +105,6 @@ int main()
 
     glm::vec3 light_position(64.0, 5.0f, 64.0f);
 
-    GLuint frames_per_print = 200;
-    GLuint frames_print_count = frames_per_print;
-
     // Event loop where all the magic happens
     while(window.isOpen())
     {
@@ -246,19 +113,12 @@ int main()
         float time_delta = current_time - previous_time;
         previous_time = current_time;
 
-        // std::cout << time_delta.asSeconds() << std::endl;
-
         // Display game state
         float fps = 1.0f / time_delta;
 
-        if(--frames_print_count == 0)
+        if(true)
         {
-            glm::vec3 current_position = camera_controller.get_position(game_characters[0]);
-
             std::cout << "FPS: " << fps << std::endl;
-            std::cout << current_position.x << " " << current_position.y << " " << current_position.z << std::endl;
-            
-            frames_print_count = frames_per_print;
         }
 
         input_controller.update(game_characters);
@@ -269,49 +129,36 @@ int main()
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // Activate our shader program
-        voxel_shader.use();
-        voxel_shader.set_uniform("viewPos", camera_controller.get_position(game_characters[0]));
+        camera_controller.add((iso::Drawable&)character);
+        camera_controller.draw((iso::Camera&)character);
+
+        // // Activate our shader program
+        // voxel_shader.use();
+        // voxel_shader.set_uniform("viewPos", camera_controller.get_position(game_characters[0]));
         
-        glm::vec3 current_light_position(light_position.x + 5*sin(current_time) , light_position.y, light_position.z + 5*cos(current_time));
-        iso::Material material(glm::vec3(1.0f, 0.0f, 0.2f), glm::vec3(1.0f, 0.2f, 0.3f), glm::vec3(0.5f, 0.5f, 0.2f), 32.0f);
-        iso::Light light(current_light_position, glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f));
+        // glm::vec3 current_light_position(light_position.x + 5*sin(current_time) , light_position.y, light_position.z + 5*cos(current_time));
+        // iso::MaterialModel material(glm::vec3(1.0f, 0.0f, 0.2f), glm::vec3(1.0f, 0.2f, 0.3f), glm::vec3(0.5f, 0.5f, 0.2f), 32.0f);
+        // iso::LightModel light(current_light_position, glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f));
 
-        voxel_shader.apply(material);
-        voxel_shader.apply(light);
+        // voxel_shader.apply(material);
+        // voxel_shader.apply(light);
         
-        // Perspective math
-        glm::mat4 view = glm::mat4(1.0f);
-        glm::mat4 projection = glm::mat4(1.0f);
-        projection = glm::perspective(glm::radians(45.0f), screen_width/screen_height, 0.1f, 100.0f);
-        view = camera_controller.get_view(game_characters[0]);
+        // // Perspective math
+        // glm::mat4 view = glm::mat4(1.0f);
+        // glm::mat4 projection = glm::mat4(1.0f);
+        // projection = glm::perspective(glm::radians(45.0f), screen_width/screen_height, 0.1f, 100.0f);
+        // view = camera_controller.get_view(game_characters[0]);
 
-        glm::mat4 model = glm::mat4(1.0f);
+        // glm::mat4 model = glm::mat4(1.0f);
 
-        voxel_shader.set_uniform("projection", projection);
-        voxel_shader.set_uniform("view", view);
-        voxel_shader.set_uniform("model", model);
+        // voxel_shader.set_uniform("projection", projection);
+        // voxel_shader.set_uniform("view", view);
+        // voxel_shader.set_uniform("model", model);
 
-        // glBindVertexArray(vertex_array_object);
-
-        // game_map.for_each(
-        //     [&voxel_shader] (glm::vec3 position, glm::vec3 voxel_color) {
-
-        //         glm::mat4 model = glm::mat4(1.0f);
-        //         model = glm::translate(model, glm::vec3((float)position.x, 0.0f, (float)position.y));
-        //         voxel_shader.set_uniform("model", model);
-        //         // glDrawArrays(GL_TRIANGLES, 0, 36);
-        //         glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (void*)0);
-        //     }   
-        // );
-
-        game_map.draw(camera_controller.get_position(game_characters[0]));
+        // game_map.draw(camera_controller.get_position(game_characters[0]));
 
         window.display();
     }
-
-    // glDeleteVertexArrays(1, &vertex_array_object);
-    // glDeleteBuffers(1, &vertex_buffer_object);
 
     return 0;
 }

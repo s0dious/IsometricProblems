@@ -10,100 +10,138 @@
 #include "glm/vec3.hpp"
 #include "glm/vec4.hpp"
 
+#include "iso_camera.hpp"
+#include "iso_database.hpp"
+
 namespace iso
 {
+    class Voxel : public iso::Drawable
+    {
+    public:
+        Voxel(glm::vec3 p_pos)
+        {
+            for(size_t j = 0; j < 6; j++)
+            {
+                for(size_t k = 0; k < 4; k++)
+                {
+                    // Vertex
+                    m_data.push_back(p_pos.x + c_vertices[12*j + 3*k]);
+                    m_data.push_back(p_pos.z + c_vertices[12*j + 3*k + 1]);
+                    m_data.push_back(p_pos.y + c_vertices[12*j + 3*k + 2]);
+
+                    // Normal
+                    m_data.push_back(c_normals[j]);
+                    m_data.push_back(c_normals[j]);
+                    m_data.push_back(c_normals[j]);
+                }
+            }
+            
+            for(size_t j = 0; j < 36; j++)
+            {
+                m_indices.push_back(c_indices[j]);
+            }
+        }
+
+    private:
+        const float c_vertices[72] = 
+        {
+            -0.5f, -0.5f, -0.5f,
+            0.5f, -0.5f, -0.5f,
+            0.5f,  0.5f, -0.5f,
+            -0.5f,  0.5f, -0.5f,
+
+            -0.5f, -0.5f,  0.5f,
+            0.5f,  0.5f,  0.5f,
+            0.5f, -0.5f,  0.5f,
+            -0.5f,  0.5f,  0.5f,
+
+            -0.5f,  0.5f,  0.5f,
+            -0.5f,  0.5f, -0.5f,
+            -0.5f, -0.5f, -0.5f,
+            -0.5f, -0.5f,  0.5f,
+
+            0.5f,  0.5f,  0.5f,
+            0.5f,  0.5f, -0.5f,
+            0.5f, -0.5f, -0.5f,
+            0.5f, -0.5f,  0.5f,
+
+            -0.5f, -0.5f, -0.5f,
+            0.5f, -0.5f, -0.5f,
+            0.5f, -0.5f,  0.5f,
+            -0.5f, -0.5f,  0.5f,
+
+            -0.5f,  0.5f, -0.5f,
+            0.5f,  0.5f, -0.5f,
+            0.5f,  0.5f,  0.5f,
+            -0.5f,  0.5f,  0.5f,
+        };
+
+        const float c_normals[18] = 
+        {
+            0.0f,  0.0f, -1.0f,
+            0.0f,  0.0f,  1.0f,
+            -1.0f,  0.0f,  0.0f,
+            1.0f,  0.0f,  0.0f,
+            0.0f, -1.0f,  0.0f,
+            0.0f,  1.0f,  0.0f
+        };
+
+        const uint c_indices[36] =
+        {
+            0, 1, 2,
+            2, 3, 1,
+
+            4, 5, 6,
+            6, 7, 5,
+
+            8, 9, 10,
+            10, 11, 8,
+
+            12, 13, 14,
+            14, 15, 12,
+
+            16, 17, 18,
+            18, 19, 16,
+
+            20, 21, 22,
+            22, 23, 20
+        };
+    };
+
+
+    class VoxelSet : public iso::Drawable
+    {
+    public:
+        VoxelSet(std::vector<glm::vec3> p_voxels, iso::MaterialModel p_material):
+            Drawable(p_material)
+        {
+            m_material = p_material;
+            for(std::vector<glm::vec3>::size_type i = 0; i < p_voxels.size(); i++)
+            {
+                Voxel current_voxel(p_voxels[i]);
+                std::vector<GLfloat> current_data = current_voxel.get_data();
+                std::vector<GLint> current_indices = current_voxel.get_indices();
+
+                m_data.insert(m_data.end(), current_data.begin(), current_data.end());
+                m_indices.insert(m_indices.end(), current_indices.begin(), current_indices.end());
+            }
+        }
+    };
+
     class VoxelMap
     {
     public:
         VoxelMap(size_t p_size);
-        void draw(glm::vec3 p_camera);
-        glm::vec4& operator()(size_t x, size_t y, size_t z); 
+        uint& operator()(size_t x, size_t y, size_t z); 
+        iso::MaterialModel get_material(uint i);
+        uint add_material(iso::MaterialModel p_material);
+        std::vector<VoxelSet> get_drawable();
 
     private:
-        void flatten();
-        void prepare();
-        void bind();
-        void buffer();
-
         size_t m_size;
-        Octree<glm::vec4> m_data;
-
-        bool m_flat = false;
-        std::vector<std::pair<glm::vec3, glm::vec4> > m_flat_data;
-
-        bool m_prepared = false;
-        std::vector<float> m_prepared_data;
-        std::vector<GLuint> m_prepared_indices;
-
-        // GL objects
-        bool m_bound;
-        bool m_buffered;
-
-        GLuint m_vertex_array_object;
-        GLuint m_vertex_buffer_object; 
-        GLuint m_element_buffer_object;
-    };
-
-
-
-    template< typename T >
-    class Map
-    {
-    public:
-        Octree<T> data = Octree<T>(0);
-
-        Map(GLuint p_size)
-        {
-            m_size = p_size;
-            data = Octree<T>(p_size);
-        }
-
-        void draw(glm::vec3 camera)
-        {
-            
-        }
-
-        // void for_each(void (*p_func)(T p_data))
-        void for_each(std::function<void(glm::vec3, T)> p_func)
-        {
-            if(!m_flattened)
-            {
-                flatten();
-            }
-
-            for(size_t i = 0; i < m_flat_data.size(); i++)
-            {
-                // std::cout << i << std::endl;
-                p_func(m_flat_data[i].first, m_flat_data[i].second);
-            }
-        }
-
-        void flatten()
-        {
-            for(GLuint i = 0; i < m_size; i++)
-            {
-                for(GLuint j = 0; j < m_size; j++)
-                {
-                    for(GLuint k = 0; k < m_size; k++)
-                    {
-                        if(data(i, j, k) != data.emptyValue())
-                        {
-                            m_flat_data.push_back(std::make_pair(glm::vec3((float)i, (float)j, (float)k), data(i, j, k)));
-                        }
-                    }
-                }
-            }
-
-            std::cout << "Voxels found: " << m_flat_data.size() << std::endl;
-
-            m_flattened = GL_TRUE;
-        }
-
-    private:
-        GLuint m_size;
-        std::vector<std::pair<glm::vec3, T> > m_flat_data;
-
-        GLboolean m_flattened = GL_FALSE;
+        std::vector<iso::MaterialModel> m_materials;
+        Octree<uint> m_data;
+        std::vector<VoxelSet> m_drawable_data;
     };
 }
 
