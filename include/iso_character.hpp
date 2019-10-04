@@ -39,7 +39,7 @@ namespace iso
     };
 
 
-    class Character : public iso::Drawable, public iso::Camera
+    class Character
     {
     friend class CharacterController;
     friend class InputController;
@@ -51,17 +51,14 @@ namespace iso
                     iso::InputType p_input_type = iso::InputType::Keyboard, 
                     iso::CameraType p_camera_type = iso::CameraType::ThirdPerson);
 
-        glm::mat4 get_view()
+        iso::Camera get_camera()
         {
-            return glm::lookAt(m_position, m_position + m_front, m_up);
+            iso::Camera camera(glm::lookAt(m_position, m_position + m_front, m_up), m_position);
+
+            return camera;
         }
 
-        glm::vec3 get_position()
-        {
-            return m_position;
-        }
-
-        std::vector<GLfloat> get_data()
+        iso::Drawable get_drawable()
         {
             std::vector<GLfloat> data = 
             {
@@ -96,11 +93,6 @@ namespace iso
                 -0.5f,  0.5f,  0.5f, 0.0f,  1.0f,  0.0f
             };
 
-            return data;
-        }
-
-        std::vector<GLint> get_indices()
-        {
             std::vector<GLint> indices =
             {
                 0, 1, 2,
@@ -122,12 +114,11 @@ namespace iso
                 22, 23, 20
             };
 
-            return indices;
-        }
+            iso::MaterialModel material(glm::vec3(1.0f, 0.0f, 0.2f), glm::vec3(1.0f, 0.2f, 0.3f), glm::vec3(0.5f, 0.5f, 0.2f), 32.0f);
 
-        MaterialModel get_material()
-        {
-            return MaterialModel(glm::vec3(1.0f, 0.0f, 0.2f), glm::vec3(1.0f, 0.2f, 0.3f), glm::vec3(0.5f, 0.5f, 0.2f), 32.0f);
+            iso::Drawable drawable(data, indices, material);
+
+            return drawable;
         }
 
     private:

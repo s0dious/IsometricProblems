@@ -93,15 +93,8 @@ int main()
 
 
     // // Initialize window state
-    // float screen_width = 1920.0f;
-    // float screen_height = 1080.0f;
-
-    std::cout << "here2.5" << std::endl;
-
-    std::vector<iso::VoxelSet> game_map_drawable = game_map.get_drawable();
-    camera_controller.set((std::vector<iso::Drawable>&)game_map_drawable);
-
-    std::cout << "here3" << std::endl;
+    std::vector<iso::Drawable> game_map_drawable = game_map.get_drawable();
+    camera_controller.set(game_map_drawable);
 
     glEnable(GL_DEPTH_TEST);
 
@@ -137,20 +130,14 @@ int main()
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        std::cout << "here4" << std::endl;
-
-        camera_controller.add((iso::Drawable&)character);
-        camera_controller.draw((iso::Camera&)character);
-
-        std::cout << "here5" << std::endl;
+        camera_controller.add(character.get_drawable());
+        glm::vec3 current_light_position(light_position.x + 5*sin(current_time) , light_position.y, light_position.z + 5*cos(current_time));
+        iso::LightModel light(current_light_position, glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f));
+        camera_controller.draw(character.get_camera(), light);
 
         // // Activate our shader program
         // voxel_shader.use();
         // voxel_shader.set_uniform("viewPos", camera_controller.get_position(game_characters[0]));
-        
-        // glm::vec3 current_light_position(light_position.x + 5*sin(current_time) , light_position.y, light_position.z + 5*cos(current_time));
-        // iso::MaterialModel material(glm::vec3(1.0f, 0.0f, 0.2f), glm::vec3(1.0f, 0.2f, 0.3f), glm::vec3(0.5f, 0.5f, 0.2f), 32.0f);
-        // iso::LightModel light(current_light_position, glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f));
 
         // voxel_shader.apply(material);
         // voxel_shader.apply(light);

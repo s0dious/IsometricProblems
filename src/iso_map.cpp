@@ -26,25 +26,52 @@ namespace iso
         return m_materials.size() - 1;
     }
 
-    std::vector<VoxelSet> VoxelMap::get_drawable()
+    std::vector<Drawable> VoxelMap::get_drawable()
     {
         size_t material_count = m_materials.size();
         std::cout << "material count: " << material_count << std::endl;
 
-        std::vector<std::vector<glm::vec3>> map_voxels(material_count);
+        std::vector<Drawable> map_drawables(material_count);
 
-        for(size_t i = 0; i < m_size; i++)
+        for(size_t x = 0; x < m_size; x++)
         {
-            for(size_t j = 0; j < m_size; j++)
+            for(size_t y = 0; y < m_size; y++)
             {
-                for(size_t k = 0; k < m_size; k++)
+                for(size_t z = 0; z < m_size; z++)
                 {
-                    uint current_material = m_data(i, j, k);
+                    uint current_material = m_data(x, y, z);
 
                     if(current_material <= material_count)
                     {
-                        // std::cout << current_material << std::endl;
-                        map_voxels[current_material].push_back(glm::vec3(i, k, j));
+                        iso::Drawable& current_drawable = map_drawables[current_material];
+
+                        // set material
+                        current_drawable.material = m_materials[current_material];
+
+                        // set data
+                        size_t current_end_index = current_drawable.data.size()/24;
+                        for(size_t j = 0; j < 6; j++)
+                        {
+                            for(size_t k = 0; k < 4; k++)
+                            {
+                                // Vertex
+                                current_drawable.data.push_back((float)x + c_vertices[12*j + 3*k]);
+                                current_drawable.data.push_back((float)y + c_vertices[12*j + 3*k + 1]);
+                                current_drawable.data.push_back((float)z + c_vertices[12*j + 3*k + 2]);
+
+                                // Normal
+                                current_drawable.data.push_back(c_normals[3*j]);
+                                current_drawable.data.push_back(c_normals[3*j + 1]);
+                                current_drawable.data.push_back(c_normals[3*j + 2]);
+                            }
+                        }
+                        
+                        // set indices
+                        for(size_t j = 0; j < 36; j++)
+                        {
+                            current_drawable.indices.push_back(current_end_index + c_indices[j]);
+                            std::cout << current_end_index + c_indices[j] << std::endl;
+                        }
                     }
                 } 
             }
@@ -52,16 +79,6 @@ namespace iso
 
         std::cout << "map voxels gathered" << std::endl;
 
-        std::vector<VoxelSet> drawable_map;
-
-        for(size_t i = 0; i < material_count; i++)
-        {
-            std::cout << map_voxels[i].size() << " voxels of material " << i << std::endl;
-            drawable_map.push_back(iso::VoxelSet(map_voxels[i], m_materials[i]));
-        }
-
-        std::cout << "Voxel sets created" << std::endl;
-
-        return drawable_map;
+        return map_drawables;
     }
 }

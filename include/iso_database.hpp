@@ -72,6 +72,18 @@ namespace iso
     {
     public:
         /**
+         *  Empty constructor
+         */
+        MaterialModel()
+            :
+            ambient(0.0f, 0.0f, 0.0f),
+            diffuse(0.0f, 0.0f, 0.0f),
+            specular(0.0f, 0.0f, 0.0f)
+        {
+
+        }
+
+        /**
          *  Direct constructor
          */
         MaterialModel(

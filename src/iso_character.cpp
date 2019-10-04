@@ -3,7 +3,7 @@
 #include <iostream>
 
 namespace iso
-{
+{    
     Character::Character(iso::CharacterModel p_character_model, glm::vec3 p_position, iso::InputType p_input_type, iso::CameraType p_camera_type):
         m_physics(p_character_model.physics),
         m_input_type(p_input_type),
@@ -82,10 +82,5 @@ namespace iso
             current_character.m_right = glm::normalize(glm::cross(current_character.m_front, glm::vec3(0.0f, 1.0f, 0.0f)));
             current_character.m_up = glm::normalize(glm::cross(current_character.m_right, current_character.m_front));
         }
-
-        // for(std::vector<iso::Character>::size_type i = 0; i < p_character_list.size(); i++)
-        // {
-        //     iso::Character& current_character = p_character_list[i];    
-        // }
     }
 }
