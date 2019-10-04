@@ -17,6 +17,7 @@ namespace iso
 
             // Update speed
             current_character.m_speed += current_character.m_acceleration * time_delta;
+            std::cout << "Speed: " << current_character.m_speed.x << " " << current_character.m_speed.y << " " << current_character.m_speed.z << std::endl;
 
             const float max_speed = 2*current_character.m_physics.movement_speed;
             const float min_speed = 0.1;
@@ -32,6 +33,8 @@ namespace iso
 
             // Update position
             current_character.m_position += current_character.m_speed * time_delta;
+
+            std::cout << "Positon: " << current_character.m_position.x << " " << current_character.m_position.y << " " << current_character.m_position.z << std::endl;
 
             if(current_character.m_position.x < 0.0f)
             {

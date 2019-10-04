@@ -68,7 +68,7 @@ int main()
         for(GLint j = 0; j < 128; j++)
         {
             std::cout << "Adding " << i << " " << j << std::endl;
-            game_map(i, j, 0) = material_id;
+            game_map(i, 0, j) = material_id;
         }
     }
 
@@ -130,10 +130,13 @@ int main()
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        camera_controller.add(character.get_drawable());
+        // Add drawables
+        camera_controller.add(game_characters[0].get_drawable());
+
+        // Draw drawables
         glm::vec3 current_light_position(light_position.x + 5*sin(current_time) , light_position.y, light_position.z + 5*cos(current_time));
         iso::LightModel light(current_light_position, glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f));
-        camera_controller.draw(character.get_camera(), light);
+        camera_controller.draw(game_characters[0].get_camera(), light);
 
         // // Activate our shader program
         // voxel_shader.use();

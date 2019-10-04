@@ -73,6 +73,7 @@ namespace iso
                     if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::W))
                     {
                         current_character.m_keyboard_input.push_back(KeyboardInput::Up);
+                        std::cout << "up" << std::endl;
                     }
                     if(sf::Keyboard::isKeyPressed(sf::Keyboard::Right) || sf::Keyboard::isKeyPressed(sf::Keyboard::D))
                     {

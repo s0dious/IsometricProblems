@@ -37,6 +37,8 @@ namespace iso
                 {
                     case iso::KeyboardInput::Up:
                         current_character.m_speed += glm::normalize(glm::vec3(current_character.m_front.x, 0.0f, current_character.m_front.z)) * p_time_delta * current_character.m_physics.movement_speed;
+                        std::cout << "Speed: ";
+                        std::cout << current_character.m_speed.x << " " << current_character.m_speed.y << " " << current_character.m_speed.z << std::endl;
                         break;
                     case iso::KeyboardInput::Down:
                     current_character.m_speed -= glm::normalize(glm::vec3(current_character.m_front.x, 0.0f, current_character.m_front.z)) * p_time_delta * current_character.m_physics.movement_speed;

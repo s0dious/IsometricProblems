@@ -49,7 +49,7 @@ namespace iso
                         current_drawable.material = m_materials[current_material];
 
                         // set data
-                        size_t current_end_index = current_drawable.data.size()/24;
+                        size_t current_end_index = current_drawable.data.size()/6;
                         for(size_t j = 0; j < 6; j++)
                         {
                             for(size_t k = 0; k < 4; k++)
@@ -59,18 +59,21 @@ namespace iso
                                 current_drawable.data.push_back((float)y + c_vertices[12*j + 3*k + 1]);
                                 current_drawable.data.push_back((float)z + c_vertices[12*j + 3*k + 2]);
 
+                                // std::cout << (float)x + c_vertices[12*j + 3*k] << " " << (float)y + c_vertices[12*j + 3*k + 1] << " " << (float)z + c_vertices[12*j + 3*k + 2] << std::endl;
+
                                 // Normal
                                 current_drawable.data.push_back(c_normals[3*j]);
                                 current_drawable.data.push_back(c_normals[3*j + 1]);
                                 current_drawable.data.push_back(c_normals[3*j + 2]);
                             }
+                            // std::cout << std::endl;
                         }
                         
                         // set indices
                         for(size_t j = 0; j < 36; j++)
                         {
                             current_drawable.indices.push_back(current_end_index + c_indices[j]);
-                            std::cout << current_end_index + c_indices[j] << std::endl;
+                            // std::cout << current_end_index + c_indices[j] << std::endl;
                         }
                     }
                 } 
