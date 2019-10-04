@@ -76,7 +76,9 @@ int main()
     iso::InputController input_controller(window);
     iso::CharacterController character_controller;
     iso::PhysicsController physics_controller;
+    std::cout << "here1" << std::endl;
     iso::CameraController camera_controller(voxel_shader);
+    std::cout << "here2" << std::endl;
 
     std::vector<iso::Character> game_characters;
 
@@ -88,12 +90,18 @@ int main()
 
     game_characters.push_back(character);
 
+
+
     // // Initialize window state
-    float screen_width = 1920.0f;
-    float screen_height = 1080.0f;
+    // float screen_width = 1920.0f;
+    // float screen_height = 1080.0f;
+
+    std::cout << "here2.5" << std::endl;
 
     std::vector<iso::VoxelSet> game_map_drawable = game_map.get_drawable();
     camera_controller.set((std::vector<iso::Drawable>&)game_map_drawable);
+
+    std::cout << "here3" << std::endl;
 
     glEnable(GL_DEPTH_TEST);
 
@@ -129,8 +137,12 @@ int main()
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+        std::cout << "here4" << std::endl;
+
         camera_controller.add((iso::Drawable&)character);
         camera_controller.draw((iso::Camera&)character);
+
+        std::cout << "here5" << std::endl;
 
         // // Activate our shader program
         // voxel_shader.use();

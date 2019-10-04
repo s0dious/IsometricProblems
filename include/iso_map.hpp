@@ -15,33 +15,38 @@
 
 namespace iso
 {
-    class Voxel : public iso::Drawable
+    class VoxelSet : public iso::Drawable
     {
     public:
-        Voxel(glm::vec3 p_pos)
+        VoxelSet(std::vector<glm::vec3> p_voxels, iso::MaterialModel p_material)
         {
-            for(size_t j = 0; j < 6; j++)
+            m_material = p_material;
+            for(std::vector<glm::vec3>::size_type i = 0; i < p_voxels.size(); i++)
             {
-                for(size_t k = 0; k < 4; k++)
-                {
-                    // Vertex
-                    m_data.push_back(p_pos.x + c_vertices[12*j + 3*k]);
-                    m_data.push_back(p_pos.z + c_vertices[12*j + 3*k + 1]);
-                    m_data.push_back(p_pos.y + c_vertices[12*j + 3*k + 2]);
+                // std::cout << "Adding voxel #" << i << std::endl;
 
-                    // Normal
-                    m_data.push_back(c_normals[j]);
-                    m_data.push_back(c_normals[j]);
-                    m_data.push_back(c_normals[j]);
+                for(size_t j = 0; j < 6; j++)
+                {
+                    for(size_t k = 0; k < 4; k++)
+                    {
+                        // Vertex
+                        m_data.push_back(p_voxels[i].x + c_vertices[12*j + 3*k]);
+                        m_data.push_back(p_voxels[i].y + c_vertices[12*j + 3*k + 1]);
+                        m_data.push_back(p_voxels[i].z + c_vertices[12*j + 3*k + 2]);
+
+                        // Normal
+                        m_data.push_back(c_normals[3*j]);
+                        m_data.push_back(c_normals[3*j + 1]);
+                        m_data.push_back(c_normals[3*j + 2]);
+                    }
+                }
+                
+                for(size_t j = 0; j < 36; j++)
+                {
+                    m_indices.push_back(24*i + c_indices[j]);
                 }
             }
-            
-            for(size_t j = 0; j < 36; j++)
-            {
-                m_indices.push_back(c_indices[j]);
-            }
         }
-
     private:
         const float c_vertices[72] = 
         {
@@ -106,26 +111,6 @@ namespace iso
             20, 21, 22,
             22, 23, 20
         };
-    };
-
-
-    class VoxelSet : public iso::Drawable
-    {
-    public:
-        VoxelSet(std::vector<glm::vec3> p_voxels, iso::MaterialModel p_material):
-            Drawable(p_material)
-        {
-            m_material = p_material;
-            for(std::vector<glm::vec3>::size_type i = 0; i < p_voxels.size(); i++)
-            {
-                Voxel current_voxel(p_voxels[i]);
-                std::vector<GLfloat> current_data = current_voxel.get_data();
-                std::vector<GLint> current_indices = current_voxel.get_indices();
-
-                m_data.insert(m_data.end(), current_data.begin(), current_data.end());
-                m_indices.insert(m_indices.end(), current_indices.begin(), current_indices.end());
-            }
-        }
     };
 
     class VoxelMap

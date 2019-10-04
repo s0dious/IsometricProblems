@@ -15,6 +15,8 @@ namespace iso
     {
     public:
         Drawable(iso::MaterialModel p_material = iso::MaterialModel(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), 0.0f)):
+            m_data(0),
+            m_indices(0),
             m_material(p_material)
         {
 
@@ -45,8 +47,8 @@ namespace iso
     class Camera
     {
     public:
-        glm::mat4 get_view() const;
-        glm::vec3 get_position() const; 
+        virtual glm::mat4 get_view() = 0;
+        virtual glm::vec3 get_position() = 0; 
     };
 
 
@@ -63,33 +65,38 @@ namespace iso
         {
             GLuint vertex_array_object, vertex_buffer_object, element_buffer_object;
 
+            std::cout << "a" << std::endl;
             std::vector<GLfloat> data = p_drawable.get_data();
             std::vector<GLint> indices = p_drawable.get_indices();
+            std::cout << "b" << std::endl;
 
-            glGenVertexArrays(1, &vertex_array_object);
-            glGenBuffers(1, &vertex_buffer_object);
-            glGenBuffers(1, &element_buffer_object);
+            if(data.size() > 0 && indices.size() > 0)
+            {
+                glGenVertexArrays(1, &vertex_array_object);
+                glGenBuffers(1, &vertex_buffer_object);
+                glGenBuffers(1, &element_buffer_object);
 
-            glBindVertexArray(vertex_array_object);
+                glBindVertexArray(vertex_array_object);
 
-            glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_object);
-            glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(float), (void*)data.data(), GL_STATIC_DRAW);
+                glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_object);
+                glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(float), (void*)data.data(), GL_STATIC_DRAW);
 
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, element_buffer_object);
-            glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(GLuint), (void*)indices.data(), GL_STATIC_DRAW);
+                glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, element_buffer_object);
+                glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(GLuint), (void*)indices.data(), GL_STATIC_DRAW);
 
-            // Location data uniform
-            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6*sizeof(GLfloat), (void*)0);
-            glEnableVertexAttribArray(0);
+                // Location data uniform
+                glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6*sizeof(GLfloat), (void*)0);
+                glEnableVertexAttribArray(0);
 
-            // Normal data uniform
-            glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), ((void*)(3*sizeof(float))));
-            glEnableVertexAttribArray(1);
+                // Normal data uniform
+                glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), ((void*)(3*sizeof(float))));
+                glEnableVertexAttribArray(1);
 
-            m_set_objects.push_back(p_drawable);
-            m_set_vertex_arrays.push_back(vertex_array_object);
+                m_set_objects.push_back(p_drawable);
+                m_set_vertex_arrays.push_back(vertex_array_object);
 
-            glBindVertexArray(0);
+                glBindVertexArray(0);
+            }
         }
 
         void add(const Drawable& p_drawable)
@@ -109,11 +116,12 @@ namespace iso
         {
             for(std::vector<Drawable>::size_type i = 0; i < p_drawables.size(); i++)
             {
+                std::cout << i << std::endl;
                 set(p_drawables[i]);
             }
         }
 
-        void draw(const Camera& p_camera)
+        void draw(Camera& p_camera)
         {
             m_shader.use();
 
