@@ -3,34 +3,27 @@
 #include <iostream>
 #include <string>
 #include <fstream>
+#include <vector>
 
 // SFML Libraries
 #include <SFML/Window.hpp>
+#include <SFML/Graphics.hpp>
 
 // OpenGL Libraries
-#include <glad/glad.h> 
+#include <glad/glad.h>
+#include <glm/glm.hpp> 
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 // Project files
-#include "shaders.hpp"
+#include "iso_camera.hpp"
+#include "iso_database.hpp"
+#include "iso_input.hpp"
+#include "iso_map.hpp"
+#include "iso_physics.hpp"
+#include "iso_shader.hpp"
 
-std::string load_file(std::string filename)
-{
-    std::string file_string;
-
-    std::ifstream file(filename);
-    if(file.is_open())
-    {
-        std::string temp;
-        while(std::getline(file, temp))
-        {
-            file_string += temp + "\n";
-        }
-
-        // file_string += "\0";
-    }
-
-    return file_string;
-}
+#include "octree/octree.h"
 
 int main()
 {
@@ -46,120 +39,108 @@ int main()
     settings.attributeFlags = sf::ContextSettings::Core;
 
     // Create OpenGL context with SFML
-    sf::Window window(sf::VideoMode(800, 800), "OpenGL", sf::Style::Default, settings);
+    sf::RenderWindow window(sf::VideoMode(1920, 1080), "OpenGL", sf::Style::None, settings);
+    // window.setFramerateLimit(60);
 
     // GLAD will find the proper opengl functions at runtime for cross platform compatability
     gladLoadGL();
 
     // Load shaders
-    std::string vertex_shader_string = load_file(std::string("shaders/vertex.glsl"));
-    std::string fragment_shader_string = load_file(std::string("shaders/fragment.glsl"));
+    iso::VertexShader vertex_shader("shaders/voxel_vertex.glsl");
+    vertex_shader.get_error();
 
-    const GLchar* vertex_shader_source = vertex_shader_string.c_str();
-    const GLchar* fragment_shader_source = fragment_shader_string.c_str();
+    iso::FragmentShader fragment_shader("shaders/voxel_fragment.glsl");
+    fragment_shader.get_error();
 
-    GLint success;
-    GLchar info_log[512];
-
-    // Load vertex shader and make sure it compiles
-    GLuint vertex_shader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertex_shader, 1, &vertex_shader_source, NULL);
-    glCompileShader(vertex_shader);
-
-    glGetShaderiv(vertex_shader, GL_COMPILE_STATUS, &success);
-    if(!success)
-    {
-        glGetShaderInfoLog(vertex_shader, 512, NULL, info_log);
-        std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << info_log << std::endl;
-    }
-
-    // Load fragment shader and make sure it compiles
-    GLuint fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragment_shader, 1, &fragment_shader_source, NULL);
-    glCompileShader(fragment_shader);
-
-    glGetShaderiv(fragment_shader, GL_COMPILE_STATUS, &success);
-    if(!success)
-    {
-        glGetShaderInfoLog(fragment_shader, 512, NULL, info_log);
-        std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << info_log << std::endl;
-    }
-
-    // Make a shader program, link shaders, and check for linking errors
-    GLuint shader_program = glCreateProgram();
-    glAttachShader(shader_program, vertex_shader);
-    glAttachShader(shader_program, fragment_shader);
-    glLinkProgram(shader_program);
-
-    glGetProgramiv(shader_program, GL_LINK_STATUS, &success);
-    if(!success)
-    {
-        glGetProgramInfoLog(shader_program, 512, NULL, info_log);
-        std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << info_log << std::endl;
-    }
+    iso::ShaderProgram voxel_shader;
+    voxel_shader.attach_shader(vertex_shader);
+    voxel_shader.attach_shader(fragment_shader);
+    voxel_shader.link();
 
     // Define vertex and index data
-    GLfloat vertices[] = {
-        0.5f, 0.5f, 0.0f,   // top right
-        0.5f, -0.5f, 0.0f,  // bottom right
-        -0.5f, -0.5f, 0.0f, // bottom left
-        -0.5f, 0.5f, 0.0f   // top left
-    };
+    iso::VoxelMap game_map(128);
 
-    GLuint indices[] = {
-        0, 1, 3,
-        1, 2, 3
-    };
+    iso::MaterialModel material(glm::vec3(1.0f, 0.0f, 0.2f), glm::vec3(1.0f, 0.2f, 0.3f), glm::vec3(0.5f, 0.5f, 0.2f), 32.0f);
+    uint material_id = game_map.add_material(material);
 
-    // Create vertex array and buffer objects
-    GLuint vertex_array_object, vertex_buffer_object, element_buffer_object;
+    for(GLint i = 0; i < 128; i++)
+    {
+        for(GLint j = 0; j < 128; j++)
+        {
+            std::cout << "Adding " << i << " " << j << std::endl;
+            game_map(i, 0, j) = material_id;
+        }
+    }
 
-    glGenVertexArrays(1, &vertex_array_object);
-    glGenBuffers(1, &vertex_buffer_object);
-    glGenBuffers(1, &element_buffer_object);
+    // Intialize controllers
+    iso::InputController input_controller(window);
+    iso::CharacterController character_controller;
+    iso::PhysicsController physics_controller;
+    iso::CameraController camera_controller;
 
-    // Bind vertex array, buffers, and set attributes
-    glBindVertexArray(vertex_array_object);
+    // iso::shader_id_t voxel_shader_id = camera_controller.set_shader(voxel_shader);
+    camera_controller.add_shader(voxel_shader);
 
-    glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_object);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    std::vector<iso::Character> game_characters;
 
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, element_buffer_object);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+    iso::CharacterModel character_model(iso::PhysicsModel(10.0f, 0.8f, 0.5f, 1.0f, 0.3f, 0.7f, 1.0f));
+    iso::Character character(character_model,
+                            glm::vec3(64.0f, 2.0f, 64.0f),
+                            iso::InputType::Keyboard,
+                            iso::CameraType::ThirdPerson);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3*sizeof(GLfloat), (void*)0);
-    glEnableVertexAttribArray(0);
+    game_characters.push_back(character);
 
+
+
+    // // Initialize window state
+    std::vector<iso::Drawable> game_map_drawable = game_map.get_drawable();
+    std::cout << "here " << game_map_drawable.size() << std::endl;
+    camera_controller.add_drawable(game_map_drawable);
+    std::cout << "here1" << std::endl;
+
+    glEnable(GL_DEPTH_TEST);
+
+    // Initialize game state
+    sf::Clock game_clock;
+
+    float current_time = 0;
+    float previous_time = 0;
+
+    glm::vec3 light_position(64.0, 5.0f, 64.0f);
 
     // Event loop where all the magic happens
-    while(window.isOpen()) {
-        sf::Event event;
+    while(window.isOpen())
+    {
 
-        while(window.pollEvent(event)) {
+        current_time = game_clock.getElapsedTime().asSeconds();
+        float time_delta = current_time - previous_time;
+        previous_time = current_time;
 
-            // Process events
-            if(event.type == sf::Event::Closed) {
-                window.close();
-            }
-            else if(event.type == sf::Event::KeyPressed) {
-                std::cout << "Key pressed" << std::endl;
+        // Display game state
+        float fps = 1.0f / time_delta;
 
-                if(event.key.code == sf::Keyboard::Escape) {
-                    window.close();
-                }
-            }
+        if(true)
+        {
+            std::cout << "FPS: " << fps << std::endl;
         }
+
+        input_controller.update(game_characters);
+        character_controller.update_input(game_characters, time_delta);
+        physics_controller.update(game_characters, time_delta);
 
         // Clear screen
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // Draw objects
-        glUseProgram(shader_program);
-        glBindVertexArray(vertex_array_object);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        // Add drawables
+        // camera_controller.add(game_characters[0].get_drawable());
 
-        // Push buffer to screen
+        // Draw drawables
+        glm::vec3 current_light_position(light_position.x + 5*sin(current_time) , light_position.y, light_position.z + 5*cos(current_time));
+        iso::LightModel light(current_light_position, glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f));
+        camera_controller.draw(game_characters[0].get_camera(), light);
+
         window.display();
     }
 

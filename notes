@@ -1,0 +1,59 @@
+Character:
+    physics_id - foreign key
+    double_jump_count - int
+
+Physics attribute:
+    movement_speed - float
+    backwards_ratio - float
+    drift_acceleration - float
+    max_drift_speed - float
+    gravity - float
+    traction - float
+    weight - float
+
+
+movement_ability:
+    startup - int
+    duration - int
+    speed - float
+    direction - enum (forward, forward_grounded, up, left, right, backward)
+    interruptible - bool
+    vulnerable - bool
+
+
+jump:
+    min_duration - int
+    max_duration - int
+    speed - float
+
+
+hook_ability:
+    cooldown - int
+    speed - float
+    duration - int
+    reelback_movement_ratio - float
+    
+
+
+projectile_ability:
+    hitbox - foreign key
+    speed - float
+    duration - int
+    knockback - vec3
+    damage - float
+    cooldown - int
+    splash_radius - float
+    gravity - float
+
+
+active_ability:
+    hitbox - foreign key
+    duration - int
+    cooldown - int
+    knockback - vec3
+    damage - float
+
+
+model:
+    shape - enum (sphere, cylinder, rectangle)
+    size - float (figure this out)
