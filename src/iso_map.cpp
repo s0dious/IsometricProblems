@@ -32,6 +32,7 @@ namespace iso
         std::cout << "material count: " << material_count << std::endl;
 
         std::vector<Drawable> map_drawables(material_count);
+        // std::cout << "map_drawables size 1:" << map_drawables.size() << std::endl;
 
         for(size_t x = 0; x < m_size; x++)
         {
@@ -82,6 +83,8 @@ namespace iso
 
         std::cout << "map voxels gathered" << std::endl;
 
+        // std::cout << "map_drawables size 2:" << map_drawables.size() << std::endl;
+        
         return map_drawables;
     }
 }

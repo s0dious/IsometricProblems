@@ -118,7 +118,7 @@ namespace iso
 
             iso::MaterialModel material(glm::vec3(1.0f, 0.0f, 0.2f), glm::vec3(1.0f, 0.2f, 0.3f), glm::vec3(0.5f, 0.5f, 0.2f), 32.0f);
             
-            iso::Drawable drawable(data, indices, material);
+            iso::Drawable drawable(material, data, indices);
 
             return drawable;
         }

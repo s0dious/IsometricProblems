@@ -76,9 +76,10 @@ int main()
     iso::InputController input_controller(window);
     iso::CharacterController character_controller;
     iso::PhysicsController physics_controller;
-    std::cout << "here1" << std::endl;
-    iso::CameraController camera_controller(voxel_shader);
-    std::cout << "here2" << std::endl;
+    iso::CameraController camera_controller;
+
+    // iso::shader_id_t voxel_shader_id = camera_controller.set_shader(voxel_shader);
+    camera_controller.add_shader(voxel_shader);
 
     std::vector<iso::Character> game_characters;
 
@@ -94,7 +95,9 @@ int main()
 
     // // Initialize window state
     std::vector<iso::Drawable> game_map_drawable = game_map.get_drawable();
-    camera_controller.set(game_map_drawable);
+    std::cout << "here " << game_map_drawable.size() << std::endl;
+    camera_controller.add_drawable(game_map_drawable);
+    std::cout << "here1" << std::endl;
 
     glEnable(GL_DEPTH_TEST);
 
@@ -131,33 +134,12 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // Add drawables
-        camera_controller.add(game_characters[0].get_drawable());
+        // camera_controller.add(game_characters[0].get_drawable());
 
         // Draw drawables
         glm::vec3 current_light_position(light_position.x + 5*sin(current_time) , light_position.y, light_position.z + 5*cos(current_time));
         iso::LightModel light(current_light_position, glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f));
         camera_controller.draw(game_characters[0].get_camera(), light);
-
-        // // Activate our shader program
-        // voxel_shader.use();
-        // voxel_shader.set_uniform("viewPos", camera_controller.get_position(game_characters[0]));
-
-        // voxel_shader.apply(material);
-        // voxel_shader.apply(light);
-        
-        // // Perspective math
-        // glm::mat4 view = glm::mat4(1.0f);
-        // glm::mat4 projection = glm::mat4(1.0f);
-        // projection = glm::perspective(glm::radians(45.0f), screen_width/screen_height, 0.1f, 100.0f);
-        // view = camera_controller.get_view(game_characters[0]);
-
-        // glm::mat4 model = glm::mat4(1.0f);
-
-        // voxel_shader.set_uniform("projection", projection);
-        // voxel_shader.set_uniform("view", view);
-        // voxel_shader.set_uniform("model", model);
-
-        // game_map.draw(camera_controller.get_position(game_characters[0]));
 
         window.display();
     }
