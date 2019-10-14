@@ -51,14 +51,7 @@ namespace iso
                     iso::InputType p_input_type = iso::InputType::Keyboard, 
                     iso::CameraType p_camera_type = iso::CameraType::ThirdPerson);
 
-        iso::Camera get_camera()
-        {
-            iso::Camera camera(glm::lookAt(m_position, m_position + m_front, m_up), m_position);
-            std::cout << "Position from here: " << m_position.x << " " << m_position.y << " " << m_position.z << std::endl;
-
-
-            return camera;
-        }
+        iso::Camera get_camera();
 
         iso::Drawable get_drawable()
         {
@@ -70,9 +63,9 @@ namespace iso
                 -0.5f,  0.5f, -0.5f, 0.0f,  0.0f, -1.0f,
 
                 -0.5f, -0.5f,  0.5f, 0.0f,  0.0f,  1.0f,
-                0.5f,  0.5f,  0.5f, 0.0f,  0.0f,  1.0f,
                 0.5f, -0.5f,  0.5f, 0.0f,  0.0f,  1.0f, 
-                -0.5f,  0.5f,  0.5f,0.0f,  0.0f,  1.0f,
+                0.5f,  0.5f,  0.5f, 0.0f,  0.0f,  1.0f,
+                -0.5f,  0.5f,  0.5f, 0.0f,  0.0f,  1.0f,
 
                 -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
                 -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
@@ -98,10 +91,10 @@ namespace iso
             std::vector<GLint> indices =
             {
                 0, 1, 2,
-                2, 3, 1,
+                2, 3, 0,
 
                 4, 5, 6,
-                6, 7, 5,
+                6, 7, 4,
 
                 8, 9, 10,
                 10, 11, 8,
@@ -118,7 +111,7 @@ namespace iso
 
             iso::MaterialModel material(glm::vec3(1.0f, 0.0f, 0.2f), glm::vec3(1.0f, 0.2f, 0.3f), glm::vec3(0.5f, 0.5f, 0.2f), 32.0f);
             
-            iso::Drawable drawable(material, data, indices);
+            iso::Drawable drawable(material, m_position, data, indices);
 
             return drawable;
         }

@@ -23,6 +23,18 @@ namespace iso
     }
 
 
+    iso::Camera Character::get_camera()
+    {
+        glm::vec3 camera_pos = m_position - 9.0f*m_front + glm::vec3(0.0f, 9.0f, 0.0f);
+
+        iso::Camera camera(glm::lookAt(camera_pos, m_position + m_front, m_up), camera_pos);
+        std::cout << "Position from here: " << m_position.x << " " << m_position.y << " " << m_position.z << std::endl;
+
+
+        return camera;
+    }
+
+
     void CharacterController::update_input(std::vector<iso::Character>& p_character_list, const float p_time_delta) 
     {
         // Update each character based on their new input state
@@ -41,7 +53,7 @@ namespace iso
                         std::cout << current_character.m_speed.x << " " << current_character.m_speed.y << " " << current_character.m_speed.z << std::endl;
                         break;
                     case iso::KeyboardInput::Down:
-                    current_character.m_speed -= glm::normalize(glm::vec3(current_character.m_front.x, 0.0f, current_character.m_front.z)) * p_time_delta * current_character.m_physics.movement_speed;
+                        current_character.m_speed -= glm::normalize(glm::vec3(current_character.m_front.x, 0.0f, current_character.m_front.z)) * p_time_delta * current_character.m_physics.movement_speed;
                         break;
                     case iso::KeyboardInput::Right:
                         current_character.m_speed += glm::normalize(glm::vec3(current_character.m_right.x, 0.0f, current_character.m_right.z)) * p_time_delta * current_character.m_physics.movement_speed;

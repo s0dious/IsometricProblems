@@ -22,9 +22,9 @@ namespace iso
         std::vector<GLfloat> data;
         std::vector<GLint> indices;
 
-        std::vector<GLint> angles;
-        glm::vec3 origin = glm::vec3(0.0f, 1.0f, 0.0f);
-        glm::vec3 axis = glm::vec3(0.0f, 0.0f, 0.0f);
+        std::vector<GLfloat> angles;
+        glm::vec3 origin = glm::vec3(0.0f, 0.0f, 0.0f);
+        glm::vec3 axis = glm::vec3(0.0f, 1.0f, 0.0f);
 
         Drawable();
         Drawable(const iso::MaterialModel& p_material, 
@@ -37,9 +37,9 @@ namespace iso
         Drawable(const iso::MaterialModel& p_material, 
                     const std::vector<GLfloat>& p_data, 
                     const std::vector<GLint>& p_indices,
-                    const std::vector<GLint>& angles,
-                    const glm::vec3& origin,
-                    const glm::vec3& axis);
+                    const std::vector<GLfloat>& p_angles,
+                    const glm::vec3& p_origin,
+                    const glm::vec3& p_axis);
     };
 
     struct Camera
@@ -55,7 +55,7 @@ namespace iso
     {
     public:        
         drawable_id_t add_drawable(const iso::Drawable& p_drawable, shader_id_t p_shader_id = 0);
-        drawable_id_t update_drawable(const iso::Drawable& p_drawable, drawable_id_t p_drawable_id, shader_id_t p_shader_id = 0);
+        drawable_id_t update_drawable(const iso::Drawable& p_drawable, drawable_id_t p_drawable_id);
 
         std::vector<drawable_id_t> add_drawable(const std::vector<Drawable>& p_drawables, shader_id_t p_shader_id = 0);
 

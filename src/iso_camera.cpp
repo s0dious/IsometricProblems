@@ -29,7 +29,7 @@ namespace iso
     Drawable::Drawable(const iso::MaterialModel& p_material, 
                 const std::vector<GLfloat>& p_data, 
                 const std::vector<GLint>& p_indices,
-                const std::vector<GLint>& p_angles,
+                const std::vector<GLfloat>& p_angles,
                 const glm::vec3& p_origin,
                 const glm::vec3& p_axis):
         material(p_material),
@@ -87,7 +87,7 @@ namespace iso
 
                 glBindVertexArray(0);
 
-                return std::make_pair(p_shader_id, m_drawables[p_shader_id].size()-1); // m_drawables.size() - 1;
+                return std::make_pair(p_shader_id, m_drawables[p_shader_id].size()-1);
             }
         }
 
@@ -107,6 +107,43 @@ namespace iso
         }
 
         return drawable_ids;
+    }
+
+
+    drawable_id_t CameraController::update_drawable(const iso::Drawable& p_drawable, drawable_id_t p_drawable_id)
+    {
+        shader_id_t shader_id = p_drawable_id.first;
+        size_t drawable_index = p_drawable_id.second;
+
+        // If it's a valid id then update the drawable and the opengl buffer
+        if(shader_id < m_drawables.size() && drawable_index < m_drawables[shader_id].size())
+        {
+            GLuint vertex_array_object, vertex_buffer_object, element_buffer_object;
+
+            vertex_array_object = m_vertex_arrays[shader_id][drawable_index];
+            vertex_buffer_object = m_vertex_buffers[shader_id][drawable_index];
+            element_buffer_object = m_element_buffers[shader_id][drawable_index];
+
+            if(p_drawable.data.size() > 0 && p_drawable.indices.size() > 0)
+            {
+                glBindVertexArray(vertex_array_object);
+
+                glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_object);
+                glBufferData(GL_ARRAY_BUFFER, p_drawable.data.size() * sizeof(GLfloat), (void*)p_drawable.data.data(), GL_STATIC_DRAW);
+
+                glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, element_buffer_object);
+                glBufferData(GL_ELEMENT_ARRAY_BUFFER, p_drawable.indices.size() * sizeof(GLuint), (void*)p_drawable.indices.data(), GL_STATIC_DRAW);
+
+                glBindVertexArray(0);
+
+                // Update stored drawables
+                m_drawables[shader_id][drawable_index] = p_drawable;
+
+                return p_drawable_id;
+            }
+        }
+
+        return std::make_pair(-1, -1);
     }
 
 
@@ -160,7 +197,7 @@ namespace iso
             std::cout << "Camera set" << std::endl;
 
             // Draw set objects
-            for(std::vector<Drawable>::size_type j = 0; j < m_drawables.size(); j++)
+            for(std::vector<Drawable>::size_type j = 0; j < m_drawables[i].size(); j++)
             {
                 iso::Drawable& current_drawable = m_drawables[i][j];
                 GLuint current_vertex_array = m_vertex_arrays[i][j];

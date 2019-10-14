@@ -91,13 +91,14 @@ int main()
 
     game_characters.push_back(character);
 
-
+    // Add the character to the camera
+    iso::Drawable game_character_drawable = game_characters[0].get_drawable();
+    iso::drawable_id_t game_character_drawable_id = camera_controller.add_drawable(game_character_drawable);
+    // camera_controller.add_drawable(game_character_drawable);
 
     // // Initialize window state
     std::vector<iso::Drawable> game_map_drawable = game_map.get_drawable();
-    std::cout << "here " << game_map_drawable.size() << std::endl;
     camera_controller.add_drawable(game_map_drawable);
-    std::cout << "here1" << std::endl;
 
     glEnable(GL_DEPTH_TEST);
 
@@ -133,8 +134,9 @@ int main()
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // Add drawables
-        // camera_controller.add(game_characters[0].get_drawable());
+        // Update drawables
+        game_character_drawable = game_characters[0].get_drawable();
+        camera_controller.update_drawable(game_character_drawable, game_character_drawable_id);
 
         // Draw drawables
         glm::vec3 current_light_position(light_position.x + 5*sin(current_time) , light_position.y, light_position.z + 5*cos(current_time));

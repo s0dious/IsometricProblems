@@ -20,7 +20,7 @@ namespace iso
             std::cout << "Speed: " << current_character.m_speed.x << " " << current_character.m_speed.y << " " << current_character.m_speed.z << std::endl;
 
             const float max_speed = 2*current_character.m_physics.movement_speed;
-            const float min_speed = 0.1;
+            const float min_speed = 0.01;
             if(glm::length(current_character.m_speed) > max_speed)
             {
                 current_character.m_speed = max_speed * glm::normalize(current_character.m_speed);
