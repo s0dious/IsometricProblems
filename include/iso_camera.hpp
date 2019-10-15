@@ -14,6 +14,19 @@ namespace iso
     typedef size_t shader_id_t;
     typedef std::pair<shader_id_t, size_t> drawable_id_t;
 
+    struct Transform
+    {
+        glm::vec3 position;
+        glm::vec3 up;
+        glm::vec3 right;
+        glm::vec3 front;
+
+        Transform(glm::vec3 p_position = glm::vec3(0.0f, 0.0f, 0.0f), 
+                    glm::vec3 p_up = glm::vec3(0.0f, 1.0f, 0.0f), 
+                    glm::vec3 p_right = glm::vec3(1.0f, 0.0f, .0f), 
+                    glm::vec3 p_front = glm::vec3(0.0f, 0.0f, 1.0f));
+    };
+
     struct Drawable
     {
         iso::MaterialModel material;
@@ -22,9 +35,7 @@ namespace iso
         std::vector<GLfloat> data;
         std::vector<GLint> indices;
 
-        std::vector<GLfloat> angles;
-        glm::vec3 origin = glm::vec3(0.0f, 0.0f, 0.0f);
-        glm::vec3 axis = glm::vec3(0.0f, 1.0f, 0.0f);
+        std::vector<Transform> frames;
 
         Drawable();
         Drawable(const iso::MaterialModel& p_material, 

@@ -3,6 +3,15 @@
 
 namespace iso
 {
+    Transform::Transform(glm::vec3 p_position, glm::vec3 p_up, glm::vec3 p_right, glm::vec3 p_front):
+        position(p_position),
+        up(p_up),
+        right(p_right),
+        front(p_front)
+    {
+
+    }
+
     Drawable::Drawable()
     { }
 
