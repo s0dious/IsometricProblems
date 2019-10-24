@@ -60,14 +60,14 @@ int main()
     // Define vertex and index data
     iso::VoxelMap game_map(128);
 
-    iso::MaterialModel material(glm::vec3(1.0f, 0.0f, 0.2f), glm::vec3(1.0f, 0.2f, 0.3f), glm::vec3(0.5f, 0.5f, 0.2f), 32.0f);
+    iso::MaterialModel material(glm::vec3(0.0f, 0.5f, 0.0f), glm::vec3(1.0f, 0.2f, 0.3f), glm::vec3(0.5f, 0.5f, 0.2f), 1.0f);
     uint material_id = game_map.add_material(material);
 
     for(GLint i = 0; i < 128; i++)
     {
         for(GLint j = 0; j < 128; j++)
         {
-            std::cout << "Adding " << i << " " << j << std::endl;
+            // std::cout << "Adding " << i << " " << j << std::endl;
             game_map(i, 0, j) = material_id;
         }
     }
@@ -98,7 +98,10 @@ int main()
 
     // // Initialize window state
     std::vector<iso::Drawable> game_map_drawable = game_map.get_drawable();
+    std::cout << game_map_drawable.size() << std::endl;
     camera_controller.add_drawable(game_map_drawable);
+
+    std::cout << "here1" << std::endl;
 
     glEnable(GL_DEPTH_TEST);
 
@@ -108,12 +111,11 @@ int main()
     float current_time = 0;
     float previous_time = 0;
 
-    glm::vec3 light_position(64.0, 5.0f, 64.0f);
+    glm::vec3 light_position(64.0, 25.0f, 64.0f);
 
     // Event loop where all the magic happens
     while(window.isOpen())
     {
-
         current_time = game_clock.getElapsedTime().asSeconds();
         float time_delta = current_time - previous_time;
         previous_time = current_time;
@@ -140,7 +142,7 @@ int main()
 
         // Draw drawables
         glm::vec3 current_light_position(light_position.x + 5*sin(current_time) , light_position.y, light_position.z + 5*cos(current_time));
-        iso::LightModel light(current_light_position, glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f));
+        iso::LightModel light(current_light_position, glm::vec3(0.5f, 0.5f, 0.5f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f));
         camera_controller.draw(game_characters[0].get_camera(), light);
 
         window.display();

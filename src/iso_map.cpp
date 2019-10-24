@@ -34,9 +34,16 @@ namespace iso
         std::vector<Drawable> map_drawables(material_count);
         // std::cout << "map_drawables size 1:" << map_drawables.size() << std::endl;
 
+        size_t height = m_size;
+        if(m_size > 64)
+        {
+            height = 64;
+        }
+
         for(size_t x = 0; x < m_size; x++)
         {
-            for(size_t y = 0; y < m_size; y++)
+            // std::cout << x << std::endl;
+            for(size_t y = 0; y < height; y++)
             {
                 for(size_t z = 0; z < m_size; z++)
                 {
@@ -81,7 +88,7 @@ namespace iso
             }
         }
 
-        std::cout << "map voxels gathered" << std::endl;
+        std::cout << "map voxels gathered " << map_drawables.size() << std::endl;
 
         // std::cout << "map_drawables size 2:" << map_drawables.size() << std::endl;
         

@@ -3,26 +3,32 @@
 
 namespace iso
 {
-    Transform::Transform(glm::vec3 p_position, glm::vec3 p_up, glm::vec3 p_right, glm::vec3 p_front):
+    Transform::Transform(glm::vec3 p_position, 
+                    GLfloat p_pitch, GLfloat p_yaw, GLfloat p_roll, 
+                    glm::vec3 p_scale):
         position(p_position),
-        up(p_up),
-        right(p_right),
-        front(p_front)
+        pitch(p_pitch),
+        yaw(p_yaw),
+        roll(p_roll),
+        scale(p_scale)
     {
 
     }
 
-    Drawable::Drawable()
-    { }
+    Drawable::Drawable():
+        frames(1)
+    { 
+
+    }
 
     Drawable::Drawable(const iso::MaterialModel& p_material, 
                 const std::vector<GLfloat>& p_data, 
                 const std::vector<GLint>& p_indices):
         material(p_material),
         data(p_data),
-        indices(p_indices)
+        indices(p_indices),
+        frames(1)
     { 
-        std::cout << "constructor" << std::endl;
     }
 
     Drawable::Drawable(const iso::MaterialModel& p_material,
@@ -32,21 +38,30 @@ namespace iso
         material(p_material),
         position(p_position),
         data(p_data),
-        indices(p_indices)
+        indices(p_indices),
+        frames(1)
+    { 
+        frames[0].position = p_position;
+    }
+
+    Drawable::Drawable(const iso::MaterialModel& p_material, 
+                    const std::vector<GLfloat>& p_data, 
+                    const std::vector<GLint>& p_indices,
+                    const Transform& p_frame):
+        material(p_material),
+        data(p_data),
+        indices(p_indices),
+        frames({p_frame})
     { }
 
     Drawable::Drawable(const iso::MaterialModel& p_material, 
                 const std::vector<GLfloat>& p_data, 
                 const std::vector<GLint>& p_indices,
-                const std::vector<GLfloat>& p_angles,
-                const glm::vec3& p_origin,
-                const glm::vec3& p_axis):
+                const std::vector<Transform>& p_frames):
         material(p_material),
         data(p_data),
         indices(p_indices),
-        angles(p_angles),
-        origin(p_origin),
-        axis(p_axis)
+        frames(p_frames)
     { }
 
     Camera::Camera(glm::mat4 p_view, glm::vec3 p_position):
@@ -107,6 +122,8 @@ namespace iso
     std::vector<drawable_id_t> CameraController::add_drawable(const std::vector<Drawable>& p_drawables, shader_id_t p_shader_id)
     {   
         std::vector<drawable_id_t> drawable_ids;
+
+        std::cout << "Adding " << p_drawables.size() << " drawables" << std::endl;
 
         for(std::vector<Drawable>::size_type i = 0; i < p_drawables.size(); i++)
         {
@@ -192,7 +209,6 @@ namespace iso
 
             // Set the camera
 
-            glm::mat4 model = glm::mat4(1.0f);
             glm::mat4 projection = glm::mat4(1.0f);
             glm::mat4 view = p_camera.view;
 
@@ -218,14 +234,26 @@ namespace iso
                 m_shaders[i].set_uniform("material.specular", current_drawable.material.specular);
                 m_shaders[i].set_uniform("material.shininess", current_drawable.material.shininess);
 
-                if(current_drawable.position != glm::vec3(0.0f, 0.0f, 0.0f))
-                {
-                    model = glm::translate(model, current_drawable.position);
-                }
-                else
-                {
-                    model = glm::mat4(1.0f);
-                }
+                std::cout << "frame " << current_drawable.frame << " of " << current_drawable.frames.size() << std::endl;
+
+                glm::mat4 model = glm::mat4(1.0f);
+                iso::Transform& transform = current_drawable.frames[current_drawable.frame];
+                current_drawable.frame = (current_drawable.frame + 1) % current_drawable.frames.size();
+                std::cout << transform.pitch << " " << transform.yaw << " " << transform.roll << std::endl;
+                std::cout << glm::radians(transform.pitch) << " " << glm::radians(transform.yaw) << " " << glm::radians(transform.roll) << std::endl;
+                model = glm::translate(model, transform.position);
+                model = glm::scale(model, transform.scale);
+                model = glm::rotate(model, glm::radians(transform.pitch), glm::vec3(1.0f, 0.0f, 0.0f));
+                model = glm::rotate(model, glm::radians(transform.yaw), glm::vec3(0.0f, 1.0f, 0.0f));
+                model = glm::rotate(model, glm::radians(transform.roll), glm::vec3(0.0f, 0.0f, 1.0f));
+                // if(current_drawable.position != glm::vec3(0.0f, 0.0f, 0.0f))
+                // {
+                //     model = glm::translate(model, current_drawable.position);
+                // }
+                // else
+                // {
+                //     model = glm::mat4(1.0f);
+                // }
                 m_shaders[i].set_uniform("model", model);
 
                 glDrawElements(GL_TRIANGLES, current_drawable.indices.size(), GL_UNSIGNED_INT, (void*)0);

@@ -20,18 +20,84 @@ namespace iso
         m_remaining_double_jump_count(2),
         m_animation_frame(0)
     {
+        std::vector<GLfloat> data = 
+        {
+            -0.5f, -0.5f, -0.5f, 0.0f,  0.0f, -1.0f,
+            0.5f, -0.5f, -0.5f, 0.0f,  0.0f, -1.0f,
+            0.5f,  0.5f, -0.5f, 0.0f,  0.0f, -1.0f,
+            -0.5f,  0.5f, -0.5f, 0.0f,  0.0f, -1.0f,
+
+            -0.5f, -0.5f,  0.5f, 0.0f,  0.0f,  1.0f,
+            0.5f, -0.5f,  0.5f, 0.0f,  0.0f,  1.0f, 
+            0.5f,  0.5f,  0.5f, 0.0f,  0.0f,  1.0f,
+            -0.5f,  0.5f,  0.5f, 0.0f,  0.0f,  1.0f,
+
+            -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+            -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+            -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f, 
+            -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+
+            0.5f,  0.5f,  0.5f, 1.0f,  0.0f,  0.0f,
+            0.5f,  0.5f, -0.5f, 1.0f,  0.0f,  0.0f,
+            0.5f, -0.5f, -0.5f, 1.0f,  0.0f,  0.0f, 
+            0.5f, -0.5f,  0.5f, 1.0f,  0.0f,  0.0f,
+
+            -0.5f, -0.5f, -0.5f, 0.0f, -1.0f,  0.0f,
+            0.5f, -0.5f, -0.5f, 0.0f, -1.0f,  0.0f, 
+            0.5f, -0.5f,  0.5f, 0.0f, -1.0f,  0.0f,
+            -0.5f, -0.5f,  0.5f, 0.0f, -1.0f,  0.0f,
+
+            -0.5f,  0.5f, -0.5f, 0.0f,  1.0f,  0.0f,
+            0.5f,  0.5f, -0.5f, 0.0f,  1.0f,  0.0f,
+            0.5f,  0.5f,  0.5f, 0.0f,  1.0f,  0.0f,
+            -0.5f,  0.5f,  0.5f, 0.0f,  1.0f,  0.0f
+        };
+
+        std::vector<GLint> indices =
+        {
+            0, 1, 2,
+            2, 3, 0,
+
+            4, 5, 6,
+            6, 7, 4,
+
+            8, 9, 10,
+            10, 11, 8,
+
+            12, 13, 14,
+            14, 15, 12,
+
+            16, 17, 18,
+            18, 19, 16,
+
+            20, 21, 22,
+            22, 23, 20
+        };
+
+        iso::MaterialModel material(glm::vec3(1.0f, 0.0f, 0.2f), glm::vec3(1.0f, 0.2f, 0.3f), glm::vec3(0.5f, 0.5f, 0.2f), 32.0f);
+        
+        iso::Drawable drawable(material, m_position, data, indices);
+
+        m_character_drawable = drawable;
     }
 
 
     iso::Camera Character::get_camera()
     {
-        glm::vec3 camera_pos = m_position - 9.0f*m_front + glm::vec3(0.0f, 9.0f, 0.0f);
+        glm::vec3 camera_pos = m_position - 12.0f*m_front + glm::vec3(0.0f, 12.0f, 0.0f);
 
-        iso::Camera camera(glm::lookAt(camera_pos, m_position + m_front, m_up), camera_pos);
+        iso::Camera camera(glm::lookAt(camera_pos, m_position + 2.0f * m_front, m_up), camera_pos);
         std::cout << "Position from here: " << m_position.x << " " << m_position.y << " " << m_position.z << std::endl;
 
 
         return camera;
+    }
+
+    iso::Drawable Character::get_drawable()
+    {
+        m_character_drawable.frames[0] = iso::Transform(m_position, 0.0f, -1.0f * m_yaw, 0.0f, glm::vec3(1.1f, 2.0f, 1.1f));
+
+        return m_character_drawable;
     }
 
 
@@ -73,7 +139,7 @@ namespace iso
             glm::vec2 mouse_input = current_character.m_mouse_input;
 
             current_character.m_pitch = 90.0f - mouse_input.y * (180.0f/1080.0f);
-            current_character.m_yaw = 0.0f + mouse_input.x * (360/1920.0f);
+            current_character.m_yaw = 0.0f + mouse_input.x * (360.0f/1920.0f);
 
             if(current_character.m_pitch < -90.0f)
             {

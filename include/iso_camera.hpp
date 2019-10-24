@@ -17,14 +17,16 @@ namespace iso
     struct Transform
     {
         glm::vec3 position;
-        glm::vec3 up;
-        glm::vec3 right;
-        glm::vec3 front;
+        
+        GLfloat pitch;
+        GLfloat yaw;
+        GLfloat roll;
+        
+        glm::vec3 scale;
 
         Transform(glm::vec3 p_position = glm::vec3(0.0f, 0.0f, 0.0f), 
-                    glm::vec3 p_up = glm::vec3(0.0f, 1.0f, 0.0f), 
-                    glm::vec3 p_right = glm::vec3(1.0f, 0.0f, .0f), 
-                    glm::vec3 p_front = glm::vec3(0.0f, 0.0f, 1.0f));
+                    GLfloat p_pitch = 0.0f, GLfloat p_yaw = 0.0f, GLfloat p_roll = 0.0f, 
+                    glm::vec3 p_scale = glm::vec3(1.0f, 1.0f, 1.0f));
     };
 
     struct Drawable
@@ -35,6 +37,7 @@ namespace iso
         std::vector<GLfloat> data;
         std::vector<GLint> indices;
 
+        size_t frame = 0;
         std::vector<Transform> frames;
 
         Drawable();
@@ -48,9 +51,11 @@ namespace iso
         Drawable(const iso::MaterialModel& p_material, 
                     const std::vector<GLfloat>& p_data, 
                     const std::vector<GLint>& p_indices,
-                    const std::vector<GLfloat>& p_angles,
-                    const glm::vec3& p_origin,
-                    const glm::vec3& p_axis);
+                    const Transform& p_frame);
+        Drawable(const iso::MaterialModel& p_material, 
+                    const std::vector<GLfloat>& p_data, 
+                    const std::vector<GLint>& p_indices,
+                    const std::vector<Transform>& p_frames);
     };
 
     struct Camera
@@ -59,6 +64,14 @@ namespace iso
         glm::vec3 position;
 
         Camera(glm::mat4 p_view, glm::vec3 p_position);
+    };
+
+
+    class Cursor
+    {
+    public:
+    private:
+
     };
 
 

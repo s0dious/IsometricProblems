@@ -53,68 +53,7 @@ namespace iso
 
         iso::Camera get_camera();
 
-        iso::Drawable get_drawable()
-        {
-            std::vector<GLfloat> data = 
-            {
-                -0.5f, -0.5f, -0.5f, 0.0f,  0.0f, -1.0f,
-                0.5f, -0.5f, -0.5f, 0.0f,  0.0f, -1.0f,
-                0.5f,  0.5f, -0.5f, 0.0f,  0.0f, -1.0f,
-                -0.5f,  0.5f, -0.5f, 0.0f,  0.0f, -1.0f,
-
-                -0.5f, -0.5f,  0.5f, 0.0f,  0.0f,  1.0f,
-                0.5f, -0.5f,  0.5f, 0.0f,  0.0f,  1.0f, 
-                0.5f,  0.5f,  0.5f, 0.0f,  0.0f,  1.0f,
-                -0.5f,  0.5f,  0.5f, 0.0f,  0.0f,  1.0f,
-
-                -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-                -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-                -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f, 
-                -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-
-                0.5f,  0.5f,  0.5f, 1.0f,  0.0f,  0.0f,
-                0.5f,  0.5f, -0.5f, 1.0f,  0.0f,  0.0f,
-                0.5f, -0.5f, -0.5f, 1.0f,  0.0f,  0.0f, 
-                0.5f, -0.5f,  0.5f, 1.0f,  0.0f,  0.0f,
-
-                -0.5f, -0.5f, -0.5f, 0.0f, -1.0f,  0.0f,
-                0.5f, -0.5f, -0.5f, 0.0f, -1.0f,  0.0f, 
-                0.5f, -0.5f,  0.5f, 0.0f, -1.0f,  0.0f,
-                -0.5f, -0.5f,  0.5f, 0.0f, -1.0f,  0.0f,
-
-                -0.5f,  0.5f, -0.5f, 0.0f,  1.0f,  0.0f,
-                0.5f,  0.5f, -0.5f, 0.0f,  1.0f,  0.0f,
-                0.5f,  0.5f,  0.5f, 0.0f,  1.0f,  0.0f,
-                -0.5f,  0.5f,  0.5f, 0.0f,  1.0f,  0.0f
-            };
-
-            std::vector<GLint> indices =
-            {
-                0, 1, 2,
-                2, 3, 0,
-
-                4, 5, 6,
-                6, 7, 4,
-
-                8, 9, 10,
-                10, 11, 8,
-
-                12, 13, 14,
-                14, 15, 12,
-
-                16, 17, 18,
-                18, 19, 16,
-
-                20, 21, 22,
-                22, 23, 20
-            };
-
-            iso::MaterialModel material(glm::vec3(1.0f, 0.0f, 0.2f), glm::vec3(1.0f, 0.2f, 0.3f), glm::vec3(0.5f, 0.5f, 0.2f), 32.0f);
-            
-            iso::Drawable drawable(material, m_position, data, indices);
-
-            return drawable;
-        }
+        iso::Drawable get_drawable();
 
     private:
         // Character attributes
@@ -137,6 +76,7 @@ namespace iso
         GLfloat m_yaw;
         GLfloat m_pitch;
 
+        iso::Drawable m_character_drawable;
         iso::CameraType m_camera_type;
 
         uint m_remaining_double_jump_count;
