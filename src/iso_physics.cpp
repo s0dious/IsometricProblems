@@ -2,6 +2,48 @@
 
 namespace iso
 {
+    Collidable::Collidable(CollidableShape p_shape, CollidableType p_type):
+        m_shape(p_shape),
+        m_type(m_type)
+    {
+    }
+
+    bool Collidable::set_properties(glm::vec3 center, GLfloat height, GLfloat width, GLfloat depth)
+    {
+        if(m_shape == CollidableShape::Cuboid)
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    bool Collidable::set_properties(glm::vec3 center, GLfloat radius, GLfloat height)
+    {
+        if(m_shape == CollidableShape::Cylinder)
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    bool Collidable::set_properties(glm::vec3 center, GLfloat radius)
+    {
+        if(m_shape == CollidableShape::Sphere)
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+
+    PhysicsController::PhysicsController()
+    {
+    }
+
+
     void PhysicsController::update(std::vector<iso::Character>& p_character_list, float time_delta)
     {
         // Update each character
