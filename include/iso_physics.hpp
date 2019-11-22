@@ -32,53 +32,60 @@ namespace iso
     {
     public:
         Collidable(CollidableShape p_shape, CollidableType p_type);
-        bool set_properties(glm::vec3 center, GLfloat height, GLfloat width, GLfloat depth);
-        bool set_properties(glm::vec3 center, GLfloat radius, GLfloat height);
-        bool set_properties(glm::vec3 center, GLfloat radius);
+        glm::vec3 check_collision(Collidable p_collidable);
 
+        CollidableShape shape;
+        CollidableType type;
 
     private:
-        CollidableShape m_shape;
-        CollidableType m_type;
-        union m_properties 
+    };
+
+
+    class CuboidCollidable : Collidable
+    {
+    public:
+        CuboidCollidable(CollidableType p_type, glm::vec3 p_center, GLfloat p_height, GLfloat p_width, GLfloat p_depth);
+        glm::vec3 check_collision(Collidable p_collidable);
+
+    private:
+        struct
         {
-            struct
-            {
-                glm::vec3 center;
-                GLfloat height;
-                GLfloat width;
-                GLfloat depth;
-            } cuboid;
+            glm::vec3 center;
+            GLfloat height;
+            GLfloat width;
+            GLfloat depth;
+        } m_properties;
+    };
 
-            struct
-            {
-                glm::vec3 center;
-                GLfloat radius;
-                GLfloat height;
-            } cylinder;
 
-            struct 
-            {
-                glm::vec3 center;
-                GLfloat radius;
-            } sphere;
-        };
+    class CylinderCollidable : Collidable
+    {
+    public:
+        CylinderCollidable(CollidableType p_type, glm::vec3 p_center, GLfloat p_radius, GLfloat p_height);
+        glm::vec3 check_collision(Collidable p_collidable);
+
+    private:
+        struct
+        {
+            glm::vec3 center;
+            GLfloat radius;
+            GLfloat height;
+        } m_properties;
     };
 
 
     class SphereCollidable : Collidable
     {
+    public:
+        SphereCollidable(CollidableType p_type, glm::vec3 p_center, GLfloat p_radius);
+        glm::vec3 check_collision(Collidable p_collidable);
 
-    };
-
-    class CylinderCollidable : Collidable
-    {
-
-    };
-
-    class CuboidCollidable : Collidable
-    {
-
+    private:
+        struct
+        {
+            glm::vec3 center;
+            GLfloat radius;
+        } m_properties;
     };
 
     class PhysicsController
