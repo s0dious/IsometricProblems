@@ -13,95 +13,50 @@ namespace iso
 {
     typedef size_t collidable_id_t;
 
-    enum class CollidableShape
-    {
-        Cuboid,
-        Cylinder,
-        Sphere
-    };
-
-    enum class CollidableType
-    {
-        Environment,
-        Character,
-        Projectile,
-        Move
-    };
-
-    class Collidable
+    struct WorldCollidable
     {
     public:
-        Collidable(CollidableShape p_shape, CollidableType p_type);
-        glm::vec3 check_collision(Collidable p_collidable);
+        WorldCollidable(glm::vec3 p_center, GLfloat p_width, GLfloat p_height, GLfloat p_depth);
+        bool test_point(glm::vec3 p_point);
 
-        CollidableShape shape;
-        CollidableType type;
-
-    private:
+        glm::vec3 center; 
+        GLfloat width; 
+        GLfloat height; 
+        GLfloat depth;
     };
 
 
-    class CuboidCollidable : Collidable
+    struct CharacterCollidable
     {
     public:
-        CuboidCollidable(CollidableType p_type, glm::vec3 p_center, GLfloat p_height, GLfloat p_width, GLfloat p_depth);
-        glm::vec3 check_collision(Collidable p_collidable);
+        CharacterCollidable(glm::vec3 p_center, GLfloat p_height, GLfloat p_radius);
+        bool test_point(glm::vec3 p_point);
 
-    private:
-        struct
-        {
-            glm::vec3 center;
-            GLfloat height;
-            GLfloat width;
-            GLfloat depth;
-        } m_properties;
+        glm::vec3 center;
+        GLfloat height;
+        GLfloat radius;
     };
 
-
-    class CylinderCollidable : Collidable
-    {
-    public:
-        CylinderCollidable(CollidableType p_type, glm::vec3 p_center, GLfloat p_radius, GLfloat p_height);
-        glm::vec3 check_collision(Collidable p_collidable);
-
-    private:
-        struct
-        {
-            glm::vec3 center;
-            GLfloat radius;
-            GLfloat height;
-        } m_properties;
-    };
-
-
-    class SphereCollidable : Collidable
-    {
-    public:
-        SphereCollidable(CollidableType p_type, glm::vec3 p_center, GLfloat p_radius);
-        glm::vec3 check_collision(Collidable p_collidable);
-
-    private:
-        struct
-        {
-            glm::vec3 center;
-            GLfloat radius;
-        } m_properties;
-    };
 
     class PhysicsController
     {
     public:
-        PhysicsController();
+        // PhysicsController();
         void update(std::vector<iso::Character>& p_character_list, float time_delta);
 
-        collidable_id_t add_collidable(Collidable p_collidable);
-        collidable_id_t add_collidable(Collidable p_collidable, collidable_id_t p_collidable_id);
+        collidable_id_t add_collidable(const WorldCollidable& p_collidable);
+        collidable_id_t update_collidable(const WorldCollidable& p_collidable, collidable_id_t p_collidable_id);
+
+        collidable_id_t add_collidable(const CharacterCollidable& p_collidable);
+        collidable_id_t update_collidable(const CharacterCollidable& p_collidable, collidable_id_t p_collidable_id);
+
+        glm::vec3 test_collision(const CharacterCollidable& p_character, const WorldCollidable& p_world);
         
     private:
-        std::list<Collidable> m_environment;
-        std::list<Collidable> m_character;
-        std::list<Collidable> m_move;
-        std::list<Collidable> m_projectile;
+        std::vector<WorldCollidable> m_environment;
+        std::vector<CharacterCollidable> m_character;
+        // std::list<Collidable> m_move;
+        // std::list<Collidable> m_projectile;
     };
 }
 

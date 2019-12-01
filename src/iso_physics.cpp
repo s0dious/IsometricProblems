@@ -2,124 +2,64 @@
 
 namespace iso
 {
-    Collidable::Collidable(CollidableShape p_shape, CollidableType p_type):
-        shape(p_shape),
-        type(p_type)
+    WorldCollidable::WorldCollidable(glm::vec3 p_center, GLfloat p_height, GLfloat p_width, GLfloat p_depth):
+        center(p_center),
+        width(p_width),
+        height(p_height),
+        depth(p_depth)
     {
+
     }
 
-    CuboidCollidable::CuboidCollidable(CollidableType p_type, glm::vec3 p_center, GLfloat p_height, GLfloat p_width, GLfloat p_depth):
-        Collidable(CollidableShape::Cuboid, p_type)
+
+    CharacterCollidable::CharacterCollidable(glm::vec3 p_center, GLfloat p_height, GLfloat p_radius):
+        center(p_center),
+        height(p_height),
+        radius(p_radius)
     {
-        m_properties.center = p_center;
-        m_properties.height = p_height;
-        m_properties.width = p_width;
-        m_properties.depth = p_depth;
+
     }
 
-    glm::vec3 CylinderCollidable::check_collision(Collidable p_collidable)
+
+    collidable_id_t PhysicsController::add_collidable(const WorldCollidable& p_collidable)
     {
-        switch(p_collidable.shape)
+        m_environment.push_back(p_collidable);
+        return m_environment.size()-1;
+    }
+
+
+    collidable_id_t PhysicsController::update_collidable(const WorldCollidable& p_collidable, collidable_id_t p_collidable_id)
+    {
+        m_environment[p_collidable_id] = p_collidable;
+        return p_collidable_id;
+    }
+
+
+    collidable_id_t PhysicsController::add_collidable(const CharacterCollidable& p_collidable)
+    {
+        m_character.push_back(p_collidable);
+        return m_character.size()-1;
+    }
+
+
+    collidable_id_t PhysicsController::update_collidable(const CharacterCollidable& p_collidable, collidable_id_t p_collidable_id)
+    {
+        m_character[p_collidable_id] = p_collidable;
+        return p_collidable_id;
+    }
+
+
+    glm::vec3 PhysicsController::test_collision(const CharacterCollidable& p_character, const WorldCollidable& p_world)
+    {
+        // Check if the Z axis overlaps
+        if(p_character.center.y - p_character.height/2 <= p_world.center.y + p_world.height/2
+            && p_character.center.y + p_character.height/2 >= p_world.center.y - p_world.height/2
+        )
         {
-            case CollidableShape::Sphere :
-                break;
-            case CollidableShape::Cuboid :
-                break;
-            case CollidableShape::Cylinder :
-                break;
-            default:
-                break;
+            // Check if the horizontal cross sections overlap
         }
-    }
 
-
-    CylinderCollidable::CylinderCollidable(CollidableType p_type, glm::vec3 p_center, GLfloat p_radius, GLfloat p_height):
-        Collidable(CollidableShape::Cylinder, p_type)
-    {
-        m_properties.center = p_center;
-        m_properties.radius = p_radius;
-        m_properties.height = p_height;
-    }
-
-    glm::vec3 CylinderCollidable::check_collision(Collidable p_collidable)
-    {
-        switch(p_collidable.shape)
-        {
-            case CollidableShape::Sphere :
-                break;
-            case CollidableShape::Cuboid :
-                break;
-            case CollidableShape::Cylinder :
-                break;
-            default:
-                break;
-        }
-    }
-
-
-    SphereCollidable::SphereCollidable(CollidableType p_type, glm::vec3 p_center, GLfloat p_radius):
-        Collidable(CollidableShape::Sphere, p_type)
-    {
-        m_properties.center = p_center;
-        m_properties.radius = p_radius;
-    }
-
-    glm::vec3 SphereCollidable::check_collision(Collidable p_collidable)
-    {
-        switch(p_collidable.shape)
-        {
-            case CollidableShape::Sphere :
-                break;
-            case CollidableShape::Cuboid :
-                break;
-            case CollidableShape::Cylinder :
-                break;
-            default:
-                break;
-        }
-    }
-
-
-    PhysicsController::PhysicsController()
-    {
-    }
-
-
-    collidable_id_t PhysicsController::add_collidable(Collidable p_collidable)
-    {
-        switch(p_collidable.type)
-        {
-            case CollidableType::Character :
-            {
-                m_character.push_front(p_collidable);
-                break;
-            }
-            case CollidableType::Environment :
-            {
-                m_environment.push_front(p_collidable);
-                break;
-            }
-            case CollidableType::Projectile :
-            {
-                m_projectile.push_front(p_collidable);
-                break;
-            }
-            case CollidableType::Move :
-            {
-                m_move.push_front(p_collidable);
-                break;
-            }
-            default:
-            {
-                break;
-            }
-        }
-    }
-
-
-    collidable_id_t PhysicsController::add_collidable(Collidable p_collidable, collidable_id_t p_collidable_id)
-    {
-
+        return glm::vec3(0.0f, 0.0f, 0.0f);
     }
 
 
