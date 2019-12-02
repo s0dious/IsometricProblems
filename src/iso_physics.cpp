@@ -57,6 +57,46 @@ namespace iso
         )
         {
             // Check if the horizontal cross sections overlap
+            glm::vec3 diff = p_world.center - p_character.center;
+
+            // clamp X direction
+            if(diff.x < -1*p_world.width/2)
+            {
+                diff.x = -1*p_world.width/2;
+            }
+            else if(diff.x > p_world.width/2)
+            {
+                diff.x = p_world.width/2;
+            }
+
+            // clamp y direction
+            if(diff.y < -1*p_world.height/2)
+            {
+                diff.y = -1*p_world.height/2;
+            }
+            else if(diff.y > p_world.height/2)
+            {
+                diff.y = p_world.height/2;
+            }
+
+            // clamp z direction
+            if(diff.z < -1*p_world.depth/2)
+            {
+                diff.z = -1*p_world.depth/2;
+            }
+            else if(diff.z > p_world.depth/2)
+            {
+                diff.z = p_world.depth/2;
+            }
+
+            // h_diff is now the closest point on the world to the character
+            if(glm::length(glm::vec2(diff.x, diff.z)) < p_character.radius)
+            {
+                // if we get here, there's a collision
+                // Find out which direction of the cube the character is on
+                // Whichever side the nearest point is closest to should be used for this
+                
+            }
         }
 
         return glm::vec3(0.0f, 0.0f, 0.0f);
