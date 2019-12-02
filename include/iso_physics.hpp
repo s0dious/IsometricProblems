@@ -9,9 +9,14 @@
 #include "iso_character.hpp"
 #include "iso_database.hpp"
 
+#define HALT_X 1
+#define HALT_Y 2
+#define HALT_Z 4
+
 namespace iso
 {
     typedef size_t collidable_id_t;
+    typedef uint8_t physics_result_t;
 
     struct WorldCollidable
     {
@@ -47,16 +52,10 @@ namespace iso
         collidable_id_t add_collidable(const WorldCollidable& p_collidable);
         collidable_id_t update_collidable(const WorldCollidable& p_collidable, collidable_id_t p_collidable_id);
 
-        collidable_id_t add_collidable(const CharacterCollidable& p_collidable);
-        collidable_id_t update_collidable(const CharacterCollidable& p_collidable, collidable_id_t p_collidable_id);
-
-        glm::vec3 test_collision(const CharacterCollidable& p_character, const WorldCollidable& p_world);
+        std::pair<glm::vec3, physics_result_t> test_collision(const CharacterCollidable& p_character, const WorldCollidable& p_world);
         
     private:
         std::vector<WorldCollidable> m_environment;
-        std::vector<CharacterCollidable> m_character;
-        // std::list<Collidable> m_move;
-        // std::list<Collidable> m_projectile;
     };
 }
 

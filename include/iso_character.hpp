@@ -52,8 +52,9 @@ namespace iso
                     iso::CameraType p_camera_type = iso::CameraType::ThirdPerson);
 
         iso::Camera get_camera();
-
         iso::Drawable get_drawable();
+
+        // iso::CharacterCollidable get_collidable();
 
     private:
         // Character attributes
@@ -79,6 +80,7 @@ namespace iso
         iso::Drawable m_character_drawable;
         iso::CameraType m_camera_type;
 
+        bool m_can_jump = true;
         uint m_remaining_double_jump_count;
         uint m_animation_frame;
     };

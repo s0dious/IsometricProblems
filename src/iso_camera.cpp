@@ -64,6 +64,68 @@ namespace iso
         frames(p_frames)
     { }
 
+    // Drawable::Drawable(const iso::MaterialModel& p_material,
+    //                 const GLfloat p_width,
+    //                 const GLfloat p_height,
+    //                 const GLfloat p_depth):
+    //     material(p_material),
+    //     frames(1)
+    // {
+    //     std::vector<GLfloat> data = 
+    //     {
+    //         -0.5f, -0.5f, -0.5f, 0.0f,  0.0f, -1.0f,
+    //         0.5f, -0.5f, -0.5f, 0.0f,  0.0f, -1.0f,
+    //         0.5f,  0.5f, -0.5f, 0.0f,  0.0f, -1.0f,
+    //         -0.5f,  0.5f, -0.5f, 0.0f,  0.0f, -1.0f,
+
+    //         -0.5f, -0.5f,  0.5f, 0.0f,  0.0f,  1.0f,
+    //         0.5f, -0.5f,  0.5f, 0.0f,  0.0f,  1.0f, 
+    //         0.5f,  0.5f,  0.5f, 0.0f,  0.0f,  1.0f,
+    //         -0.5f,  0.5f,  0.5f, 0.0f,  0.0f,  1.0f,
+
+    //         -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+    //         -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+    //         -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f, 
+    //         -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+
+    //         0.5f,  0.5f,  0.5f, 1.0f,  0.0f,  0.0f,
+    //         0.5f,  0.5f, -0.5f, 1.0f,  0.0f,  0.0f,
+    //         0.5f, -0.5f, -0.5f, 1.0f,  0.0f,  0.0f, 
+    //         0.5f, -0.5f,  0.5f, 1.0f,  0.0f,  0.0f,
+
+    //         -0.5f, -0.5f, -0.5f, 0.0f, -1.0f,  0.0f,
+    //         0.5f, -0.5f, -0.5f, 0.0f, -1.0f,  0.0f, 
+    //         0.5f, -0.5f,  0.5f, 0.0f, -1.0f,  0.0f,
+    //         -0.5f, -0.5f,  0.5f, 0.0f, -1.0f,  0.0f,
+
+    //         -0.5f,  0.5f, -0.5f, 0.0f,  1.0f,  0.0f,
+    //         0.5f,  0.5f, -0.5f, 0.0f,  1.0f,  0.0f,
+    //         0.5f,  0.5f,  0.5f, 0.0f,  1.0f,  0.0f,
+    //         -0.5f,  0.5f,  0.5f, 0.0f,  1.0f,  0.0f
+    //     };
+
+    //     std::vector<GLint> indices =
+    //     {
+    //         0, 1, 2,
+    //         2, 3, 0,
+
+    //         4, 5, 6,
+    //         6, 7, 4,
+
+    //         8, 9, 10,
+    //         10, 11, 8,
+
+    //         12, 13, 14,
+    //         14, 15, 12,
+
+    //         16, 17, 18,
+    //         18, 19, 16,
+
+    //         20, 21, 22,
+    //         22, 23, 20
+    //     };
+    // }
+
     Camera::Camera(glm::mat4 p_view, glm::vec3 p_position):
         view(p_view),
         position(p_position)
@@ -123,13 +185,13 @@ namespace iso
     {   
         std::vector<drawable_id_t> drawable_ids;
 
-        std::cout << "Adding " << p_drawables.size() << " drawables" << std::endl;
+        // std::cout << "Adding " << p_drawables.size() << " drawables" << std::endl;
 
         for(std::vector<Drawable>::size_type i = 0; i < p_drawables.size(); i++)
         {
             drawable_id_t index = add_drawable(p_drawables[i], p_shader_id);
             drawable_ids.push_back(index);
-            std::cout << i << std::endl;
+            // std::cout << i << std::endl;
         }
 
         return drawable_ids;
@@ -212,7 +274,7 @@ namespace iso
 
             // std::cout << "position" << p_light.position.x << " " << p_light.position.y << " " << p_light.position.z  << std::endl;
 
-            std::cout << "Light set" << std::endl;
+            // std::cout << "Light set" << std::endl;
 
             // Set the camera
 
@@ -226,7 +288,7 @@ namespace iso
             m_shaders[i].set_uniform("view", view);
             // m_shader.set_uniform("model", model);
 
-            std::cout << "Camera set" << std::endl;
+            // std::cout << "Camera set" << std::endl;
 
             // Draw set objects
             for(std::vector<Drawable>::size_type j = 0; j < m_drawables[i].size(); j++)
@@ -241,13 +303,13 @@ namespace iso
                 m_shaders[i].set_uniform("material.specular", current_drawable.material.specular);
                 m_shaders[i].set_uniform("material.shininess", current_drawable.material.shininess);
 
-                std::cout << "frame " << current_drawable.frame << " of " << current_drawable.frames.size() << std::endl;
+                // std::cout << "frame " << current_drawable.frame << " of " << current_drawable.frames.size() << std::endl;
 
                 glm::mat4 model = glm::mat4(1.0f);
                 iso::Transform& transform = current_drawable.frames[current_drawable.frame];
                 current_drawable.frame = (current_drawable.frame + 1) % current_drawable.frames.size();
-                std::cout << transform.pitch << " " << transform.yaw << " " << transform.roll << std::endl;
-                std::cout << glm::radians(transform.pitch) << " " << glm::radians(transform.yaw) << " " << glm::radians(transform.roll) << std::endl;
+                // std::cout << transform.pitch << " " << transform.yaw << " " << transform.roll << std::endl;
+                // std::cout << glm::radians(transform.pitch) << " " << glm::radians(transform.yaw) << " " << glm::radians(transform.roll) << std::endl;
                 model = glm::translate(model, transform.position);
                 model = glm::scale(model, transform.scale);
                 model = glm::rotate(model, glm::radians(transform.pitch), glm::vec3(1.0f, 0.0f, 0.0f));
