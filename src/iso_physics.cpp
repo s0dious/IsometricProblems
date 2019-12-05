@@ -111,7 +111,10 @@ namespace iso
                 // otherwise we're moving horizontally
                 else
                 {
-                    delta = p_character.radius/2 * glm::normalize(diff);
+                    GLfloat delta_magnitude = p_character.radius - glm::length(glm::vec2(diff.x, diff.z));
+                    std::cout << "Magnitude: " << delta_magnitude << std::endl;
+
+                    delta = delta_magnitude * glm::normalize(diff);
                     // if it's moved back to one of the X sides
                     if(glm::abs(diff.x) > glm::abs(diff.z))
                     {
