@@ -44,6 +44,7 @@ int main()
     // Create OpenGL context with SFML
     sf::Window window(sf::VideoMode(window_width, window_height), "OpenGL", sf::Style::None, settings);
     // window.setFramerateLimit(60);
+    window.setMouseCursorVisible(false);
 
     // GLAD will find the proper opengl functions at runtime for cross platform compatability
     gladLoadGL();
@@ -74,6 +75,27 @@ int main()
             game_map(i, 0, j) = material_id;
         }
     }
+    // add some obstacles
+    game_map(64, 1, 64) = material_id;
+    game_map(64, 2, 64) = material_id;
+    game_map(64, 3, 64) = material_id;
+    game_map(64, 4, 64) = material_id;
+
+    game_map(63, 1, 64) = material_id;
+    game_map(63, 2, 64) = material_id;
+    game_map(63, 3, 64) = material_id;
+    game_map(63, 4, 64) = material_id;
+
+    game_map(64, 1, 63) = material_id;
+    game_map(64, 2, 63) = material_id;
+    game_map(64, 3, 63) = material_id;
+    game_map(64, 4, 63) = material_id;
+
+    game_map(63, 1, 63) = material_id;
+    game_map(63, 2, 63) = material_id;
+    game_map(63, 3, 63) = material_id;
+    game_map(63, 4, 63) = material_id;
+    
 
     // Intialize controllers
     iso::InputController input_controller(window);
@@ -88,7 +110,7 @@ int main()
 
     iso::CharacterModel character_model(iso::PhysicsModel(10.0f, 0.8f, 0.5f, 1.0f, 0.3f, 0.7f, 1.0f));
     iso::Character character(character_model,
-                            glm::vec3(64.0f, 2.0f, 64.0f),
+                            glm::vec3(64.0f, 8.0f, 64.0f),
                             iso::InputType::Keyboard,
                             iso::CameraType::ThirdPerson);
 
@@ -99,12 +121,21 @@ int main()
     iso::drawable_id_t game_character_drawable_id = camera_controller.add_drawable(game_character_drawable);
     // camera_controller.add_drawable(game_character_drawable);
 
-    // // Initialize window state
+    // Initialize environment
+    // iso::MaterialModel environment_material(glm::vec3(0.0f, 0.5f, 0.0f), glm::vec3(1.0f, 0.2f, 0.3f), glm::vec3(0.5f, 0.5f, 0.2f), 1.0f);
+    // iso::Drawable environment_drawable = iso::Drawable(environment_material, 128.0f, 1.0f, 128.0f);
+    iso::WorldCollidable environment_collidable = iso::WorldCollidable(glm::vec3(64.0f, -4.0f, 64.0f), 128.0f, 10.0f, 128.0f);
+    iso::WorldCollidable obstacle_collidable = iso::WorldCollidable(glm::vec3(63.5f, 3.0f, 63.5f), 2.0f, 4.0f, 2.0f);
+
+    // // Initialize world state
+    // camera_controller.add_drawable(environment_drawable);
     std::vector<iso::Drawable> game_map_drawable = game_map.get_drawable();
-    std::cout << game_map_drawable.size() << std::endl;
     camera_controller.add_drawable(game_map_drawable);
 
-    std::cout << "here1" << std::endl;
+    physics_controller.add_collidable(environment_collidable);
+    physics_controller.add_collidable(obstacle_collidable);
+
+    // std::cout << "here1" << std::endl;
 
     glEnable(GL_DEPTH_TEST);
 
@@ -144,6 +175,7 @@ int main()
         camera_controller.draw(game_characters[0].get_camera(), light);
 
         window.display();
+        std::cout << std::endl;
     }
 
     return 0;

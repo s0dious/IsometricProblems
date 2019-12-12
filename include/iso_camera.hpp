@@ -56,6 +56,10 @@ namespace iso
                     const std::vector<GLfloat>& p_data, 
                     const std::vector<GLint>& p_indices,
                     const std::vector<Transform>& p_frames);
+        Drawable(const iso::MaterialModel& p_material,
+                    const GLfloat p_width,
+                    const GLfloat p_height,
+                    const GLfloat p_depth);
     };
 
     struct Camera

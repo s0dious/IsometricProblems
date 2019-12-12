@@ -87,7 +87,7 @@ namespace iso
         glm::vec3 camera_pos = m_position - 12.0f*m_front + glm::vec3(0.0f, 12.0f, 0.0f);
 
         iso::Camera camera(glm::lookAt(camera_pos, m_position + 2.0f * m_front, m_up), camera_pos);
-        std::cout << "Position from here: " << m_position.x << " " << m_position.y << " " << m_position.z << std::endl;
+        // std::cout << "Position from here: " << m_position.x << " " << m_position.y << " " << m_position.z << std::endl;
 
 
         return camera;
@@ -115,8 +115,6 @@ namespace iso
                 {
                     case iso::KeyboardInput::Up:
                         current_character.m_speed += glm::normalize(glm::vec3(current_character.m_front.x, 0.0f, current_character.m_front.z)) * p_time_delta * current_character.m_physics.movement_speed;
-                        std::cout << "Speed: ";
-                        std::cout << current_character.m_speed.x << " " << current_character.m_speed.y << " " << current_character.m_speed.z << std::endl;
                         break;
                     case iso::KeyboardInput::Down:
                         current_character.m_speed -= glm::normalize(glm::vec3(current_character.m_front.x, 0.0f, current_character.m_front.z)) * p_time_delta * current_character.m_physics.movement_speed;
@@ -128,6 +126,11 @@ namespace iso
                         current_character.m_speed -= glm::normalize(glm::vec3(current_character.m_right.x, 0.0f, current_character.m_right.z)) * p_time_delta * current_character.m_physics.movement_speed;
                         break;
                     case iso::KeyboardInput::Space:
+                        if(current_character.m_can_jump)
+                        {
+                            current_character.m_speed += glm::vec3(0.0f, 20.0f, 0.0f);
+                            current_character.m_can_jump = false;
+                        }
                         break;
                     default:
                         break;
